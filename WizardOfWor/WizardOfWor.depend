@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1628805238 source:/home/nachogranados/GitHub/SDL2/WizardOfWor/main.c
+1628809401 source:/home/nachogranados/GitHub/SDL2/WizardOfWor/main.c
 	<stdlib.h>
 	<stdio.h>
 	<stdbool.h>

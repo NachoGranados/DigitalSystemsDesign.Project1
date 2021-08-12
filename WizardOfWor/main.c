@@ -8,23 +8,16 @@
 static const int WIDTH = 1000;
 static const int HEIGHT = 700;
 
-
 typedef struct {
 
     SDL_Renderer *renderer;
     SDL_Window *window;
 
-    int up;
-    int down;
-    int left;
-    int right;
-
 } Game;
-
 
 static Game game;
 
-
+/*
 typedef struct {
 
     int up;
@@ -34,31 +27,7 @@ typedef struct {
 
 } Action;
 
-
 static Action action;
-
-
-
-
-typedef struct {
-
-    int x;
-    int y;
-    int w; // Puede ser constante
-    int h; // Puede ser constante
-
-    SDL_Texture *texture;
-    //SDL_Rect destination;
-
-} Character;
-
-
-
-
-
-
-
-
 
 typedef struct {
 
@@ -70,6 +39,46 @@ typedef struct {
     SDL_Rect texture_destination;
 
 } Player;
+*/
+
+typedef struct {
+
+    int x;
+    int y;
+    int w;
+    int h;
+
+    //int dx;
+    //int dy;
+    int health;
+
+    SDL_Texture *texture;
+
+} Character;
+
+typedef struct {
+
+    float x;
+    float y;
+    int w;
+    int h;
+    int active;
+
+    SDL_Texture *texture;
+
+} Laser;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -86,31 +95,6 @@ void createWindow() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
-
 void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
 
     SDL_Rect destination;
@@ -120,17 +104,13 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
     destination.w = w;
     destination.h = h;
 
-    //SDL_QueryTexture(texture, NULL, NULL, &player->destination->w, &player->destination->h);
-
     SDL_RenderCopy(game.renderer, texture, NULL, &destination);
 
 }
 
-
-void doInput(Character *player) {
+void inputAction(Character *player, Laser *laser) {
 
     SDL_Event event;
-    /*
 
     while(SDL_PollEvent(&event)) {
 
@@ -147,110 +127,49 @@ void doInput(Character *player) {
 
                     case SDLK_UP:
 
-                        player->destination->y -= 1;
+                        player->y -= 4;
                         break;
 
                     case SDLK_DOWN:
 
-                        player->destination->y += 1;
+                        player->y += 4;
                         break;
 
                     case SDLK_LEFT:
 
-                        player->destination->x -= 1;
+                        player->x -= 4;
                         break;
 
                     case SDLK_RIGHT:
 
-                        player->destination->x += 1;
+                        player->x += 4;
                         break;
+
+                    case SDLK_SPACE:
+
+                        laser->active = 1;
 
                 }
 
         }
 
     }
-    */
 
 }
 
-void pressKey(SDL_KeyboardEvent *event, Character *player) {
 
-    if (event -> repeat == 0) {
+void laserAction(Character *player, Laser *laser) {
 
-            if (event -> keysym.sym == SDL_SCANCODE_UP) {
+    if (laser->active == 1 && laser->x < WIDTH) {
 
-                game.up = 1;
+        laser->x += player->x + 1;
+        laser->y = player->y;
 
-            } else if (event -> keysym.scancode == SDL_SCANCODE_DOWN) {
-
-                game.down = 1;
-
-            } else if (event -> keysym.scancode == SDL_SCANCODE_LEFT) {
-
-                game.left = 1;
-
-            } else if (event -> keysym.scancode == SDL_SCANCODE_RIGHT) {
-
-                game.right = 1;
-
-            }
+        setPosition(laser->texture, laser->x, laser->y, laser->w, laser->h);
 
     }
 
 }
-
-void releaseKey(SDL_KeyboardEvent *event) {
-
-    if (event -> repeat == 0) {
-
-            if (event -> keysym.scancode == SDL_SCANCODE_UP) {
-
-                game.up = 0;
-
-            } else if (event -> keysym.scancode == SDL_SCANCODE_DOWN) {
-
-                game.down = 0;
-
-            } else if (event -> keysym.scancode == SDL_SCANCODE_LEFT) {
-
-                game.left = 0;
-
-            } else if (event -> keysym.scancode == SDL_SCANCODE_RIGHT) {
-
-                game.right = 0;
-
-            }
-
-    }
-
-}
-
-/*
-void moveCharacter(Character player) {
-
-    if (game.up) {
-
-        player.y -= 4;
-
-    } else if (game.down) {
-
-        player.y += 4;
-
-    } else if (game.left) {
-
-        player.x -= 4;
-
-    } else if (game.right) {
-
-        player.x += 4;
-
-    }
-
-}
-*/
-
-
 
 
 
@@ -272,38 +191,23 @@ int main (int argc, char **argv) {
 
     createWindow();
 
-	//SDL_Init(SDL_INIT_VIDEO);
-
-	//Game game;
-
-	//game.window = SDL_CreateWindow("Wizard of Wor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                    //width, height, SDL_WINDOW_OPENGL);
-
-	//game.renderer = SDL_CreateRenderer(game.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-	//SDL_SetRenderDrawColor(game.renderer, 0, 255, 0, 255);
-
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 
-
-	//SDL_Surface *image = IMG_Load("Worrior.png");
-	//player.texture = SDL_CreateTextureFromSurface(game.renderer, image);
-	//SDL_FreeSurface(image);
-
-
-
-
-
-
     Character player;
-
 	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior.png");
-
 	player.x = 100;
 	player.y = 100;
 	player.w = 100;
 	player.h = 100;
+
+
+	Laser laser;
+	laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser.png");
+	laser.x = 100;
+	laser.y = 100;
+	laser.w = 40;
+	laser.h = 40;
 
 
 
@@ -320,114 +224,46 @@ int main (int argc, char **argv) {
 	player2.texture_destination.h = 100;
 	*/
 
-	//Action action;
-
-
-    SDL_Event event;
-
 	while(1) {
 
         SDL_SetRenderDrawColor(game.renderer, 0, 255, 0, 255);
         SDL_RenderClear(game.renderer);
 
-        //doInput(&player);
+        inputAction(&player, &laser);
 
-        SDL_PollEvent(&event);
+        laserAction(&player, &laser);
 
-        if (event.type == SDL_QUIT) {
 
-            exit(0);
-            break;
 
-        } else if (event.type == SDL_KEYDOWN) {
 
-            switch (event.key.keysym.sym) {
 
-                    case SDLK_UP:
 
-                        player.y -= 4;
-                        break;
 
-                    case SDLK_DOWN:
 
-                        player.y += 4;
-                        break;
 
-                    case SDLK_LEFT:
 
-                        player.x -= 4;
-                        break;
 
-                    case SDLK_RIGHT:
 
-                        player.x += 4;
-                        break;
 
-            }
 
-        }
+
+
+
+
+
+
+
+
+
+
 
         setPosition(player.texture, player.x, player.y, player.w, player.h);
 
-
-
-
-        //moveCharacter(player);
-
-        /*
-        if (action.up == 1) {
-
-            player.y -= 4;
-
-        } else if (action.down) {
-
-            player.y += 4;
-
-        } else if (action.left) {
-
-            player.x -= 4;
-
-        } else if (action.right) {
-
-            player.x += 4;
-
-        }
-        */
-
-        //printf("player.x = %d\n", player.x);
-
-
-        //setPosition(player.texture, player.x, player.y, player.w, player.h);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//SDL_RenderCopy(game.renderer, player1.image_texture, NULL, &player1.texture_destination);
 		//SDL_RenderCopy(game.renderer, player2.image_texture, NULL, &player2.texture_destination);
-
-
-
-
-
-
-
-
-
-
 
 		SDL_RenderPresent(game.renderer);
 
-		SDL_Delay(16);
+		SDL_Delay(45);
 
 	}
 
