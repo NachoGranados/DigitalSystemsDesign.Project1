@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1628736239 source:/home/nachogranados/GitHub/SDL2/WizardOfWor/main.c
+	<stdlib.h>
+	<stdio.h>
+	<stdbool.h>
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+
