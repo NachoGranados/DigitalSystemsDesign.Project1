@@ -5,8 +5,26 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-static const int WIDTH = 1000;
-static const int HEIGHT = 700;
+
+static const int SCREEN_WIDTH = 1000;
+static const int SCREEN_HEIGHT = 700;
+
+static const int LASER_WIDTH = 40;
+static const int LASER_HEIGHT = 40;
+
+static const int CHARACTER_SPEED = 10;
+
+static const int LASER_SPEED = 3;
+
+static const int MAX_LASER_QUANTITY = 10;
+
+
+
+
+
+
+
+
 
 typedef struct {
 
@@ -48,8 +66,6 @@ typedef struct {
     int w;
     int h;
 
-    //int dx;
-    //int dy;
     int health;
 
     SDL_Texture *texture;
@@ -58,11 +74,10 @@ typedef struct {
 
 typedef struct {
 
-    float x;
-    float y;
+    int x;
+    int y;
     int w;
     int h;
-    int active;
 
     SDL_Texture *texture;
 
@@ -70,6 +85,15 @@ typedef struct {
 
 
 
+
+
+typedef struct {
+
+    int quantity;
+
+    Laser *array;
+
+} LaserArray;
 
 
 
@@ -87,7 +111,7 @@ void createWindow() {
     SDL_Init(SDL_INIT_VIDEO);
 
 	game.window = SDL_CreateWindow("Wizard of Wor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                    WIDTH, HEIGHT, 0);
+                                    SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
@@ -108,7 +132,44 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
 
 }
 
-void inputAction(Character *player, Laser *laser) {
+
+
+
+
+
+
+void createLaser(Character *player, LaserArray *laserArray) {
+
+    if (laserArray->quantity < MAX_LASER_QUANTITY) {
+
+        Laser laser;
+        laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser.png");
+        laser.x = player->x;
+        laser.y = player->y;
+        laser.w = LASER_WIDTH;
+        laser.h = LASER_HEIGHT;
+
+        laserArray->array[laserArray->quantity] = laser;
+
+        laserArray->quantity++;
+
+    }
+
+    if (laserArray->quantity >= MAX_LASER_QUANTITY) {
+
+        laserArray->quantity = 0;
+
+    }
+
+}
+
+
+
+
+
+
+
+void inputAction(Character *player, LaserArray *laserArray) {
 
     SDL_Event event;
 
@@ -127,27 +188,28 @@ void inputAction(Character *player, Laser *laser) {
 
                     case SDLK_UP:
 
-                        player->y -= 4;
+                        player->y -= CHARACTER_SPEED;
                         break;
 
                     case SDLK_DOWN:
 
-                        player->y += 4;
+                        player->y += CHARACTER_SPEED;
                         break;
 
                     case SDLK_LEFT:
 
-                        player->x -= 4;
+                        player->x -= CHARACTER_SPEED;
                         break;
 
                     case SDLK_RIGHT:
 
-                        player->x += 4;
+                        player->x += CHARACTER_SPEED;
                         break;
 
                     case SDLK_SPACE:
 
-                        laser->active = 1;
+                        createLaser(player, laserArray);
+                        break;
 
                 }
 
@@ -158,18 +220,45 @@ void inputAction(Character *player, Laser *laser) {
 }
 
 
-void laserAction(Character *player, Laser *laser) {
 
-    if (laser->active == 1 && laser->x < WIDTH) {
 
-        laser->x += player->x + 1;
-        laser->y = player->y;
 
-        setPosition(laser->texture, laser->x, laser->y, laser->w, laser->h);
+
+
+
+
+
+
+
+
+
+void laserAction(Character *player, LaserArray *laserArray) {
+
+    for (int i = 0; i < laserArray->quantity; i++) {
+
+        if (laserArray->array[i].x < SCREEN_WIDTH) {
+
+            laserArray->array[i].x += player->x + LASER_SPEED;
+            laserArray->array[i].y = player->y;
+
+            setPosition(laserArray->array[i].texture, laserArray->array[i].x,
+                        laserArray->array[i].y, laserArray->array[i].w,
+                        laserArray->array[i].h);
+
+        }
 
     }
 
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -202,36 +291,39 @@ int main (int argc, char **argv) {
 	player.h = 100;
 
 
-	Laser laser;
-	laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser.png");
-	laser.x = 100;
-	laser.y = 100;
-	laser.w = 40;
-	laser.h = 40;
 
 
 
-    /*
+	LaserArray laserArray;
+	laserArray.array = (Laser*)malloc(10 * sizeof(Laser));
+	laserArray.quantity = 0;
 
-	Player player2;
-	SDL_Surface *image = IMG_Load("Wizard of Wor.png");
-	player2.image_texture = SDL_CreateTextureFromSurface(game.renderer, image);
-	SDL_FreeSurface(image);
 
-	player2.texture_destination.x = 300;
-	player2.texture_destination.y = 300;
-	player2.texture_destination.w = 100;
-	player2.texture_destination.h = 100;
-	*/
+
+
+
+
+
+
+
+
+
+	Character player2;
+	player2.texture = IMG_LoadTexture(game.renderer,"Images/Wizard of Wor.png");
+	player2.x = 300;
+	player2.y = 300;
+	player2.w = 100;
+	player2.h = 100;
+
 
 	while(1) {
 
         SDL_SetRenderDrawColor(game.renderer, 0, 255, 0, 255);
         SDL_RenderClear(game.renderer);
 
-        inputAction(&player, &laser);
+        inputAction(&player, &laserArray);
 
-        laserAction(&player, &laser);
+        laserAction(&player, &laserArray);
 
 
 
@@ -259,16 +351,21 @@ int main (int argc, char **argv) {
 
         setPosition(player.texture, player.x, player.y, player.w, player.h);
 
-		//SDL_RenderCopy(game.renderer, player2.image_texture, NULL, &player2.texture_destination);
+        setPosition(player2.texture, player2.x, player2.y, player2.w, player2.h);
+
+
+
 
 		SDL_RenderPresent(game.renderer);
 
-		SDL_Delay(45);
+		SDL_Delay(50);
 
 	}
 
 	SDL_DestroyTexture(player.texture);
-	//SDL_DestroyTexture(player2.image_texture);
+	SDL_DestroyTexture(player2.texture);
+
+	free(laserArray.array);
 
 	IMG_Quit();
 	SDL_DestroyRenderer(game.renderer);
