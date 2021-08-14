@@ -5,7 +5,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 900;
 
@@ -22,7 +21,9 @@ const int LASER_SPEED = 50;
 const int LASER_ADJUSTMENT = 18;
 const int LASER_MAX_QUANTITY = 20;
 
-const int MAP_1_SIZE = 43;
+const int MAP_1_3_SIZE = 43;
+const int MAP_2_SIZE = 33;
+
 
 
 /*
@@ -48,7 +49,6 @@ typedef struct {
 
 } Player;
 */
-
 
 
 
@@ -92,7 +92,6 @@ typedef struct {
     Laser *array;
 
 } LaserArray;
-
 
 void createWindow() {
 
@@ -245,7 +244,7 @@ void createMap1(SDL_Rect *mapArray) {
     ptr++;
 
 
-    // First level middle horizontal lines
+    // First level side horizontal lines
     for (int i = 0; i < 2; i++) {
 
         SDL_Rect rectangle;
@@ -539,6 +538,673 @@ void createMap1(SDL_Rect *mapArray) {
 
 }
 
+void createMap2(SDL_Rect *mapArray) {
+
+    int ptr = 0;
+
+    // Top horizontal line
+    SDL_Rect rectangleTop;
+
+    rectangleTop.x = 80;
+    rectangleTop.y = 37;
+    rectangleTop.w = 1039;
+    rectangleTop.h = 9;
+
+    mapArray[ptr] = rectangleTop;
+    ptr++;
+
+
+    // First level horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 461 + i * 188;
+        rectangle.y = 127;
+        rectangle.w = 92;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Second level side horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = -6 + i * 1116;
+        rectangle.y = 220;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+    // Second level central horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 180 + i * 656;
+        rectangle.y = 220;
+        rectangle.w = 186;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Third level side horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = -6 + i * 1120;
+        rectangle.y = 314;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Third level center horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 367 + i * 282;
+        rectangle.y = 314;
+        rectangle.w = 185;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fourth level horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 180 + i * 750;
+        rectangle.y = 408;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fifth level horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 273 + i * 470;
+        rectangle.y = 502;
+        rectangle.w = 187;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Bottom horizontal line 1
+    SDL_Rect rectangleBottom1;
+
+    rectangleBottom1.x = 80;
+    rectangleBottom1.y = 596;
+    rectangleBottom1.w = 947;
+    rectangleBottom1.h = 9;
+
+    mapArray[ptr] = rectangleBottom1;
+    ptr++;
+
+
+    // Bottom horizontal line 2 ---- door
+    SDL_Rect rectangleBottom2;
+
+    rectangleBottom2.x = 1026;
+    rectangleBottom2.y = 596;
+    rectangleBottom2.w = 93;
+    rectangleBottom2.h = 9;
+
+    mapArray[ptr] = rectangleBottom2;
+    ptr++;
+
+
+    // Down horizontal line
+    SDL_Rect rectangleDown;
+
+    rectangleDown.x = 1018;
+    rectangleDown.y = 685;
+    rectangleDown.w = 100;
+    rectangleDown.h = 9;
+
+    mapArray[ptr] = rectangleDown;
+    ptr++;
+
+
+    // First level side vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 80 + i * 1030;
+        rectangle.y = 37;
+        rectangle.w = 9;
+        rectangle.h = 190;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // First level middle vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 268 + i * 656;
+        rectangle.y = 128;
+        rectangle.w = 9;
+        rectangle.h = 190;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // First level center vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 548 + i * 95;
+        rectangle.y = 128;
+        rectangle.w = 9;
+        rectangle.h = 95;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Second level vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 455 + i * 282;
+        rectangle.y = 225;
+        rectangle.w = 9;
+        rectangle.h = 190;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+    // Left vertical line
+    SDL_Rect rectangleLeftVertical;
+
+    rectangleLeftVertical.x = 80;
+    rectangleLeftVertical.y = 314;
+    rectangleLeftVertical.w = 9;
+    rectangleLeftVertical.h = 290;
+
+    mapArray[ptr] = rectangleLeftVertical;
+    ptr++;
+
+
+    // Third level left vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 174 + i * 844;
+        rectangle.y = 320;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fourth level vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 268 + i * 655;
+        rectangle.y = 413;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Right vertical line
+    SDL_Rect rectangleRightVertical;
+
+    rectangleRightVertical.x = 1110;
+    rectangleRightVertical.y = 314;
+    rectangleRightVertical.w = 9;
+    rectangleRightVertical.h = 380;
+
+    mapArray[ptr] = rectangleRightVertical;
+    ptr++;
+
+
+    // Sixth level vertical line
+    SDL_Rect rectangleDownVertical;
+
+    rectangleDownVertical.x = 1018;
+    rectangleDownVertical.y = 604;
+    rectangleDownVertical.w = 9;
+    rectangleDownVertical.h = 90;
+
+    mapArray[ptr] = rectangleDownVertical;
+
+}
+
+void createMap3(SDL_Rect *mapArray) {
+
+    int ptr = 0;
+
+    // Top horizontal line
+    SDL_Rect rectangleTop;
+
+    rectangleTop.x = 80;
+    rectangleTop.y = 37;
+    rectangleTop.w = 1039;
+    rectangleTop.h = 9;
+
+    mapArray[ptr] = rectangleTop;
+    ptr++;
+
+
+    // First level side horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 180 + i * 750;
+        rectangle.y = 127;
+        rectangle.w = 90;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // First level center horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 462 + i * 187;
+        rectangle.y = 127;
+        rectangle.w = 90;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Second level side horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = -6 + i * 1116;
+        rectangle.y = 220;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Second level horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 367 + i * 280;
+        rectangle.y = 220;
+        rectangle.w = 185;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Third level side horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = -6 + i * 1116;
+        rectangle.y = 314;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Third level center horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 365 + i * 378;
+        rectangle.y = 314;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fourth level side horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 180 + i * 750;
+        rectangle.y = 408;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fourth level center horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 460 + i * 188;
+        rectangle.y = 408;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+    // Fifth level horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 273 + i * 560;
+        rectangle.y = 502;
+        rectangle.w = 95;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Bottom horizontal line 1
+    SDL_Rect rectangleBottom1;
+
+    rectangleBottom1.x = 80;
+    rectangleBottom1.y = 596;
+    rectangleBottom1.w = 947;
+    rectangleBottom1.h = 9;
+
+    mapArray[ptr] = rectangleBottom1;
+    ptr++;
+
+
+    // Bottom horizontal line 2 ---- door
+    SDL_Rect rectangleBottom2;
+
+    rectangleBottom2.x = 1026;
+    rectangleBottom2.y = 596;
+    rectangleBottom2.w = 93;
+    rectangleBottom2.h = 9;
+
+    mapArray[ptr] = rectangleBottom2;
+    ptr++;
+
+
+    // Down horizontal line
+    SDL_Rect rectangleDown;
+
+    rectangleDown.x = 1018;
+    rectangleDown.y = 685;
+    rectangleDown.w = 100;
+    rectangleDown.h = 9;
+
+    mapArray[ptr] = rectangleDown;
+    ptr++;
+
+
+    // First level side vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 80 + i * 1030;
+        rectangle.y = 37;
+        rectangle.w = 9;
+        rectangle.h = 190;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // First level center vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 361 + i * 470;
+        rectangle.y = 37;
+        rectangle.w = 9;
+        rectangle.h = 95;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Second level vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 175 + i * 842;
+        rectangle.y = 131;
+        rectangle.w = 9;
+        rectangle.h = 93;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+    // Left vertical line
+    SDL_Rect rectangleLeftVertical;
+
+    rectangleLeftVertical.x = 80;
+    rectangleLeftVertical.y = 314;
+    rectangleLeftVertical.w = 9;
+    rectangleLeftVertical.h = 290;
+
+    mapArray[ptr] = rectangleLeftVertical;
+    ptr++;
+
+
+    // Third level side vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 267 + i * 657;
+        rectangle.y = 226;
+        rectangle.w = 9;
+        rectangle.h = 190;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Third level center vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 550 + i * 93;
+        rectangle.y = 226;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fourth level vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 361 + i * 470;
+        rectangle.y = 320;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fifth level side vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 175 + i * 842;
+        rectangle.y = 413;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Fifth level center vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 550 + i * 92;
+        rectangle.y = 413;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Sixth level vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 455 + i * 281;
+        rectangle.y = 508;
+        rectangle.w = 9;
+        rectangle.h = 92;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+    // Right vertical line
+    SDL_Rect rectangleRightVertical;
+
+    rectangleRightVertical.x = 1110;
+    rectangleRightVertical.y = 314;
+    rectangleRightVertical.w = 9;
+    rectangleRightVertical.h = 380;
+
+    mapArray[ptr] = rectangleRightVertical;
+    ptr++;
+
+
+    // Sixth level vertical line
+    SDL_Rect rectangleDownVertical;
+
+    rectangleDownVertical.x = 1018;
+    rectangleDownVertical.y = 604;
+    rectangleDownVertical.w = 9;
+    rectangleDownVertical.h = 90;
+
+    mapArray[ptr] = rectangleDownVertical;
+
+}
+
 void showMap(SDL_Rect *mapArray, int arraySize) {
 
     for (int i = 0; i < arraySize; i++) {
@@ -574,7 +1240,6 @@ int main (int argc, char **argv) {
 
     SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
 
-
     Character player;
     Character *player_ptr = &player;
 	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
@@ -583,16 +1248,37 @@ int main (int argc, char **argv) {
 	player.w = CHARACTER_WIDTH;
 	player.h = CHARACTER_HEIGHT;
 
-
 	LaserArray laserArray;
 	LaserArray *laserArray_ptr = &laserArray;
 	laserArray.array = (Laser*)malloc(10 * sizeof(Laser));
 	laserArray.quantity = 0;
 
+	SDL_Rect *mapArray;
 
-	SDL_Rect *mapArray = (SDL_Rect*)malloc(43 * sizeof(SDL_Rect));
+    int randomMap = (rand() % 3) + 1;
 
-	createMap1(mapArray);
+    int randomMapSize;
+
+    if (randomMap == 1) {
+
+        mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
+        randomMapSize = MAP_1_3_SIZE;
+        createMap1(mapArray);
+
+
+    } else if (randomMap == 2) {
+
+        mapArray = (SDL_Rect*)malloc(MAP_2_SIZE * sizeof(SDL_Rect));
+        randomMapSize = MAP_2_SIZE;
+        createMap2(mapArray);
+
+    } else {
+
+        mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
+        randomMapSize = MAP_1_3_SIZE;
+        createMap3(mapArray);
+
+    }
 
 
 
@@ -632,11 +1318,11 @@ int main (int argc, char **argv) {
 
         //setPosition(player2.texture, player2.x, player2.y, player2.w, player2.h);
 
-        showMap(mapArray, MAP_1_SIZE);
 
 
 
 
+        showMap(mapArray, randomMapSize);
 
         inputAction(player_ptr, laserArray_ptr);
 
