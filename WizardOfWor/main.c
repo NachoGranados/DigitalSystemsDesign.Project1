@@ -5,6 +5,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+
+// Constants
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 900;
 
@@ -25,33 +27,7 @@ const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
 
 
-
-/*
-typedef struct {
-
-    int up;
-    int down;
-    int left;
-    int right;
-
-} Action;
-
-static Action action;
-
-typedef struct {
-
-    int life;
-    int score;
-    int direction;
-
-    SDL_Texture *image_texture;
-    SDL_Rect texture_destination;
-
-} Player;
-*/
-
-
-
+// Structures definition
 typedef struct {
 
     SDL_Renderer *renderer;
@@ -103,6 +79,10 @@ typedef struct {
 
 } LaserArray;
 
+
+/*
+  This function creates and sets specific characteristics to the window
+*/
 void createWindow() {
 
     SDL_Init(SDL_INIT_VIDEO);
@@ -116,6 +96,10 @@ void createWindow() {
 
 }
 
+
+/*
+  This function assigns every attribute of the given texture and it shows them in the window
+*/
 void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
 
     SDL_Rect destination;
@@ -129,6 +113,10 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
 
 }
 
+/*
+  This function creates and stores the laser's structures in the give array and it assigns them
+  the attributes they need
+  */
 void createLaser(Character *player, LaserArray *laserArray) {
 
     if (laserArray->quantity < LASER_MAX_QUANTITY) {
@@ -166,6 +154,9 @@ void createLaser(Character *player, LaserArray *laserArray) {
 
 }
 
+/*
+  This function execute the given by the computer mouse or the keyboard respectively
+*/
 void inputAction(Character *player, LaserArray *laserArray) {
 
     SDL_Event event;
@@ -173,6 +164,7 @@ void inputAction(Character *player, LaserArray *laserArray) {
     while(SDL_PollEvent(&event)) {
 
         switch(event.type) {
+
 
             case SDL_QUIT:
 
@@ -183,6 +175,7 @@ void inputAction(Character *player, LaserArray *laserArray) {
 
                 switch (event.key.keysym.sym) {
 
+                    // Move player upwards
                     case SDLK_UP:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
@@ -190,6 +183,7 @@ void inputAction(Character *player, LaserArray *laserArray) {
                         player->direction = 0;
                         break;
 
+                    // Move player downwards
                     case SDLK_DOWN:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
@@ -197,6 +191,7 @@ void inputAction(Character *player, LaserArray *laserArray) {
                         player->direction = 1;
                         break;
 
+                    // Move player leftwards
                     case SDLK_LEFT:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
@@ -204,6 +199,7 @@ void inputAction(Character *player, LaserArray *laserArray) {
                         player->direction = 2;
                         break;
 
+                    // Move player rightwards
                     case SDLK_RIGHT:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
@@ -211,6 +207,7 @@ void inputAction(Character *player, LaserArray *laserArray) {
                         player->direction = 3;
                         break;
 
+                    // Player fire
                     case SDLK_SPACE:
 
                         createLaser(player, laserArray);
@@ -224,6 +221,9 @@ void inputAction(Character *player, LaserArray *laserArray) {
 
 }
 
+/*
+  This function assigns the correct position of every laser in the given array based on its positions
+*/
 void laserAction(Character *player, LaserArray *laserArray) {
 
     for (int i = 0; i < laserArray->quantity; i++) {
@@ -257,6 +257,9 @@ void laserAction(Character *player, LaserArray *laserArray) {
 
 }
 
+/*
+  This function creates the necessary rectangles to build the first map
+*/
 void createMap1(SDL_Rect *mapArray) {
 
     int ptr = 0;
@@ -644,6 +647,9 @@ void createMap1(SDL_Rect *mapArray) {
 
 }
 
+/*
+  This function creates the necessary rectangles to build the second map
+*/
 void createMap2(SDL_Rect *mapArray) {
 
     int ptr = 0;
@@ -1003,6 +1009,9 @@ void createMap2(SDL_Rect *mapArray) {
 
 }
 
+/*
+  This function creates the necessary rectangles to build the third map
+*/
 void createMap3(SDL_Rect *mapArray) {
 
     int ptr = 0;
@@ -1441,6 +1450,9 @@ void createMap3(SDL_Rect *mapArray) {
 
 }
 
+/*
+  This function shows every rectangle given by the array in the window
+*/
 void showMap(SDL_Rect *mapArray, int arraySize) {
 
     for (int i = 0; i < arraySize; i++) {
@@ -1451,10 +1463,9 @@ void showMap(SDL_Rect *mapArray, int arraySize) {
 
 }
 
-
-
-
-
+/*
+  This function calls and executes the necessary functions to run the game
+*/
 int main (int argc, char **argv) {
 
     createWindow();
@@ -1462,10 +1473,10 @@ int main (int argc, char **argv) {
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
     SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
-    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map1.png");
 
     SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
 
+    // Player creation
     Character player;
     Character *player_ptr = &player;
 	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
@@ -1475,11 +1486,13 @@ int main (int argc, char **argv) {
 	player.h = CHARACTER_HEIGHT;
 	player.direction = 3; // Cambiarlo con la posicion inicial del jugador
 
+	// Laser creation
 	LaserArray laserArray;
 	LaserArray *laserArray_ptr = &laserArray;
 	laserArray.array = (Laser*)malloc(10 * sizeof(Laser));
 	laserArray.quantity = 0;
 
+	// Map creation
 	SDL_Rect *mapArray;
 
     //int randomMap = (rand() % 3) + 1;
@@ -1487,19 +1500,21 @@ int main (int argc, char **argv) {
 
     int randomMapSize;
 
+    // Load first map
     if (randomMap == 1) {
 
         mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
         randomMapSize = MAP_1_3_SIZE;
         createMap1(mapArray);
 
-
+    // Load second map
     } else if (randomMap == 2) {
 
         mapArray = (SDL_Rect*)malloc(MAP_2_SIZE * sizeof(SDL_Rect));
         randomMapSize = MAP_2_SIZE;
         createMap2(mapArray);
 
+    // Load third map
     } else {
 
         mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
@@ -1508,51 +1523,17 @@ int main (int argc, char **argv) {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-	Character player2;
-	player2.texture = IMG_LoadTexture(game.renderer,"Images/Wizard of Wor.png");
-	player2.x = 300;
-	player2.y = 300;
-	player2.w = 100;
-	player2.h = 100;
-	*/
-
-
-
+    // Infinite loop
 	while(1) {
 
         SDL_SetRenderDrawColor(game.renderer, 0, 102, 204, 0);
         SDL_RenderClear(game.renderer);
 
-
-
-
-
         setPosition(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         setPosition(wallpaper, 0, 605, 400, 300);
 
-
-
         setPosition(player.texture, player.x, player.y, player.w, player.h);
-
-        //setPosition(player2.texture, player2.x, player2.y, player2.w, player2.h);
-
-
-
-
 
         showMap(mapArray, randomMapSize);
 
@@ -1560,18 +1541,16 @@ int main (int argc, char **argv) {
 
         laserAction(player_ptr, laserArray_ptr);
 
-
-
-
-
 		SDL_RenderPresent(game.renderer);
 
 		SDL_Delay(50);
 
 	}
 
+	// Free memory
+	printf("Aqui se libera la memoria");
+
 	SDL_DestroyTexture(player.texture);
-	//SDL_DestroyTexture(player2.texture);
 
 	free(laserArray.array);
 	free(mapArray);
