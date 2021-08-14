@@ -15,7 +15,7 @@ const int CHARACTER_POSX = 95;
 const int CHARACTER_POSY = 47;
 const int CHARACTER_WIDTH = 80;
 const int CHARACTER_HEIGHT = 80;
-const int CHARACTER_SPEED = 13;    // Para el mapa 1 funciona bien
+const int CHARACTER_SPEED = 13;
 
 const int LASER_SPEED = 50;
 const int LASER_ADJUSTMENT = 18;
@@ -68,6 +68,11 @@ typedef struct {
     int w;
     int h;
 
+    int direction; // up = 0
+                   // down = 1
+                   // left = 2
+                   // right = 3
+
     int health;
 
     SDL_Texture *texture;
@@ -80,6 +85,11 @@ typedef struct {
     int y;
     int w;
     int h;
+
+    int direction; // up = 0
+                   // down = 1
+                   // left = 2
+                   // right = 3
 
     SDL_Texture *texture;
 
@@ -124,11 +134,23 @@ void createLaser(Character *player, LaserArray *laserArray) {
     if (laserArray->quantity < LASER_MAX_QUANTITY) {
 
         Laser laser;
-        laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser.png");
         laser.x = player->x + LASER_ADJUSTMENT;
         laser.y = player->y + LASER_ADJUSTMENT;
         laser.w = LASER_WIDTH;
         laser.h = LASER_HEIGHT;
+        laser.direction = player->direction;
+
+        // Vertical texture
+        if (player->direction < 2) {
+
+            laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser/Vertical.png");
+
+        // Horizontal texture
+        } else {
+
+            laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser/Horizontal.png");
+
+        }
 
         laserArray->array[laserArray->quantity] = laser;
 
@@ -165,24 +187,28 @@ void inputAction(Character *player, LaserArray *laserArray) {
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
                         player->y -= CHARACTER_SPEED;
+                        player->direction = 0;
                         break;
 
                     case SDLK_DOWN:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
                         player->y += CHARACTER_SPEED;
+                        player->direction = 1;
                         break;
 
                     case SDLK_LEFT:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
                         player->x -= CHARACTER_SPEED;
+                        player->direction = 2;
                         break;
 
                     case SDLK_RIGHT:
 
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
                         player->x += CHARACTER_SPEED;
+                        player->direction = 3;
                         break;
 
                     case SDLK_SPACE:
@@ -202,15 +228,30 @@ void laserAction(Character *player, LaserArray *laserArray) {
 
     for (int i = 0; i < laserArray->quantity; i++) {
 
-        if (laserArray->array[i].x < SCREEN_WIDTH) {
+        // Up
+        if (laserArray->array[i].direction == 0 && laserArray->array[i].y > -LASER_HEIGHT) {
+
+            laserArray->array[i].y -= LASER_SPEED;
+
+        // Down
+        } else if (laserArray->array[i].direction == 1 && laserArray->array[i].y < SCREEN_HEIGHT)  {
+
+            laserArray->array[i].y += LASER_SPEED;
+
+        // Left
+        } else if (laserArray->array[i].direction == 2 && laserArray->array[i].x > -LASER_WIDTH) {
+
+            laserArray->array[i].x -= LASER_SPEED;
+
+        // Right
+        } else if (laserArray->array[i].direction == 3 && laserArray->array[i].x < SCREEN_WIDTH) {
 
             laserArray->array[i].x += LASER_SPEED;
 
-            setPosition(laserArray->array[i].texture, laserArray->array[i].x,
-                        laserArray->array[i].y, laserArray->array[i].w,
-                        laserArray->array[i].h);
-
         }
+
+        setPosition(laserArray->array[i].texture, laserArray->array[i].x, laserArray->array[i].y,
+                    laserArray->array[i].w, laserArray->array[i].h);
 
     }
 
@@ -1237,8 +1278,18 @@ int main (int argc, char **argv) {
 
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-
     SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
+    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map2.png");
+
+    SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
+
+
+
+
+
+
+
+
 
     Character player;
     Character *player_ptr = &player;
@@ -1247,6 +1298,7 @@ int main (int argc, char **argv) {
 	player.y = CHARACTER_POSY;
 	player.w = CHARACTER_WIDTH;
 	player.h = CHARACTER_HEIGHT;
+	player.direction = 3; // Cambiarlo con la posicion inicial del jugador
 
 	LaserArray laserArray;
 	LaserArray *laserArray_ptr = &laserArray;
@@ -1313,6 +1365,10 @@ int main (int argc, char **argv) {
 
 
         setPosition(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        setPosition(wallpaper, 0, 605, 400, 300);
+
+
 
         setPosition(player.texture, player.x, player.y, player.w, player.h);
 
