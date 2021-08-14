@@ -6,22 +6,23 @@
 #include <SDL2/SDL_image.h>
 
 
-static const int SCREEN_WIDTH = 1200;
-static const int SCREEN_HEIGHT = 900;
+const int SCREEN_WIDTH = 1200;
+const int SCREEN_HEIGHT = 900;
 
-static const int LASER_WIDTH = 40;
-static const int LASER_HEIGHT = 40;
+const int LASER_WIDTH = 40;
+const int LASER_HEIGHT = 40;
 
-static const int CHARACTER_POSX = 95;
-static const int CHARACTER_POSY = 47;
-static const int CHARACTER_WIDTH = 80;
-static const int CHARACTER_HEIGHT = 80;
-static const int CHARACTER_SPEED = 13;    // Para el mapa 1 funciona bien
+const int CHARACTER_POSX = 95;
+const int CHARACTER_POSY = 47;
+const int CHARACTER_WIDTH = 80;
+const int CHARACTER_HEIGHT = 80;
+const int CHARACTER_SPEED = 13;    // Para el mapa 1 funciona bien
 
-static const int LASER_SPEED = 50;
-static const int LASER_ADJUSTMENT = 18;
-static const int LASER_MAX_QUANTITY = 20;
+const int LASER_SPEED = 50;
+const int LASER_ADJUSTMENT = 18;
+const int LASER_MAX_QUANTITY = 20;
 
+const int MAP_1_SIZE = 43;
 
 
 /*
@@ -91,7 +92,6 @@ typedef struct {
     Laser *array;
 
 } LaserArray;
-
 
 
 void createWindow() {
@@ -164,21 +164,25 @@ void inputAction(Character *player, LaserArray *laserArray) {
 
                     case SDLK_UP:
 
+                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
                         player->y -= CHARACTER_SPEED;
                         break;
 
                     case SDLK_DOWN:
 
+                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
                         player->y += CHARACTER_SPEED;
                         break;
 
                     case SDLK_LEFT:
 
+                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
                         player->x -= CHARACTER_SPEED;
                         break;
 
                     case SDLK_RIGHT:
 
+                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
                         player->x += CHARACTER_SPEED;
                         break;
 
@@ -213,28 +217,32 @@ void laserAction(Character *player, LaserArray *laserArray) {
 
 }
 
-void createMap1() {
+void createMap1(SDL_Rect *mapArray) {
+
+    int ptr = 0;
 
     // Top horizontal line
-    SDL_Rect rectangle_top;
+    SDL_Rect rectangleTop;
 
-    rectangle_top.x = 80;
-    rectangle_top.y = 37;
-    rectangle_top.w = 1039;
-    rectangle_top.h = 9;
+    rectangleTop.x = 80;
+    rectangleTop.y = 37;
+    rectangleTop.w = 1039;
+    rectangleTop.h = 9;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_top);
+    mapArray[ptr] = rectangleTop;
+    ptr++;
 
 
     //First level center horizontal line
-    SDL_Rect rectangle_center;
+    SDL_Rect rectangleCenter;
 
-    rectangle_center.x = 555;
-    rectangle_center.y = 127;
-    rectangle_center.w = 90;
-    rectangle_center.h = 9;
+    rectangleCenter.x = 555;
+    rectangleCenter.y = 127;
+    rectangleCenter.w = 90;
+    rectangleCenter.h = 9;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_center);
+    mapArray[ptr] = rectangleCenter;
+    ptr++;
 
 
     // First level middle horizontal lines
@@ -247,7 +255,8 @@ void createMap1() {
         rectangle.w = 185;
         rectangle.h = 9;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -262,7 +271,8 @@ void createMap1() {
         rectangle.w = 95;
         rectangle.h = 9;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -277,7 +287,8 @@ void createMap1() {
         rectangle.w = 177;
         rectangle.h = 9;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -292,7 +303,8 @@ void createMap1() {
         rectangle.w = 95;
         rectangle.h = 9;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -307,7 +319,8 @@ void createMap1() {
         rectangle.w = 95;
         rectangle.h = 9;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -322,42 +335,46 @@ void createMap1() {
         rectangle.w = 95;
         rectangle.h = 9;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
 
     // Bottom horizontal line 1
-    SDL_Rect rectangle_bottom_1;
+    SDL_Rect rectangleBottom1;
 
-    rectangle_bottom_1.x = 80;
-    rectangle_bottom_1.y = 596;
-    rectangle_bottom_1.w = 947;
-    rectangle_bottom_1.h = 9;
+    rectangleBottom1.x = 80;
+    rectangleBottom1.y = 596;
+    rectangleBottom1.w = 947;
+    rectangleBottom1.h = 9;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_bottom_1);
+    mapArray[ptr] = rectangleBottom1;
+    ptr++;
 
 
     // Bottom horizontal line 2 ---- door
-    SDL_Rect rectangle_bottom_2;
+    SDL_Rect rectangleBottom2;
 
-    rectangle_bottom_2.x = 1026;
-    rectangle_bottom_2.y = 596;
-    rectangle_bottom_2.w = 93;
-    rectangle_bottom_2.h = 9;
+    rectangleBottom2.x = 1026;
+    rectangleBottom2.y = 596;
+    rectangleBottom2.w = 93;
+    rectangleBottom2.h = 9;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_bottom_2);
+    mapArray[ptr] = rectangleBottom2;
+    ptr++;
 
 
     // Down horizontal line
-    SDL_Rect rectangle_down;
+    SDL_Rect rectangleDown;
 
-    rectangle_down.x = 1018;
-    rectangle_down.y = 685;
-    rectangle_down.w = 100;
-    rectangle_down.h = 9;
+    rectangleDown.x = 1018;
+    rectangleDown.y = 685;
+    rectangleDown.w = 100;
+    rectangleDown.h = 9;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_down);
+    mapArray[ptr] = rectangleDown;
+    ptr++;
 
 
     // First level side vertical lines
@@ -370,7 +387,8 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 190;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -385,7 +403,8 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 95;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -400,19 +419,21 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 93;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
     // Left vertical line
-    SDL_Rect rectangle_left_vertical;
+    SDL_Rect rectangleLeftVertical;
 
-    rectangle_left_vertical.x = 80;
-    rectangle_left_vertical.y = 314;
-    rectangle_left_vertical.w = 9;
-    rectangle_left_vertical.h = 290;
+    rectangleLeftVertical.x = 80;
+    rectangleLeftVertical.y = 314;
+    rectangleLeftVertical.w = 9;
+    rectangleLeftVertical.h = 290;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_left_vertical);
+    mapArray[ptr] = rectangleLeftVertical;
+    ptr++;
 
 
     // Third level left vertical lines
@@ -425,7 +446,8 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 92;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -440,7 +462,8 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 92;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -455,7 +478,8 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 92;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -470,7 +494,8 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 92;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
@@ -485,32 +510,55 @@ void createMap1() {
         rectangle.w = 9;
         rectangle.h = 92;
 
-        SDL_RenderFillRect(game.renderer, &rectangle);
+        mapArray[ptr] = rectangle;
+        ptr++;
 
     }
 
     // Right vertical line
-    SDL_Rect rectangle_right_vertical;
+    SDL_Rect rectangleRightVertical;
 
-    rectangle_right_vertical.x = 1110;
-    rectangle_right_vertical.y = 314;
-    rectangle_right_vertical.w = 9;
-    rectangle_right_vertical.h = 380;
+    rectangleRightVertical.x = 1110;
+    rectangleRightVertical.y = 314;
+    rectangleRightVertical.w = 9;
+    rectangleRightVertical.h = 380;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_right_vertical);
+    mapArray[ptr] = rectangleRightVertical;
+    ptr++;
 
 
     // Sixth level vertical line
-    SDL_Rect rectangle_down_vertical;
+    SDL_Rect rectangleDownVertical;
 
-    rectangle_down_vertical.x = 1018;
-    rectangle_down_vertical.y = 604;
-    rectangle_down_vertical.w = 9;
-    rectangle_down_vertical.h = 90;
+    rectangleDownVertical.x = 1018;
+    rectangleDownVertical.y = 604;
+    rectangleDownVertical.w = 9;
+    rectangleDownVertical.h = 90;
 
-    SDL_RenderFillRect(game.renderer, &rectangle_down_vertical);
+    mapArray[ptr] = rectangleDownVertical;
 
 }
+
+void showMap(SDL_Rect *mapArray, int arraySize) {
+
+    for (int i = 0; i < arraySize; i++) {
+
+        SDL_RenderFillRect(game.renderer, &mapArray[i]);
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -529,7 +577,7 @@ int main (int argc, char **argv) {
 
     Character player;
     Character *player_ptr = &player;
-	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior.png");
+	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
 	player.x = CHARACTER_POSX;
 	player.y = CHARACTER_POSY;
 	player.w = CHARACTER_WIDTH;
@@ -540,6 +588,19 @@ int main (int argc, char **argv) {
 	LaserArray *laserArray_ptr = &laserArray;
 	laserArray.array = (Laser*)malloc(10 * sizeof(Laser));
 	laserArray.quantity = 0;
+
+
+	SDL_Rect *mapArray = (SDL_Rect*)malloc(43 * sizeof(SDL_Rect));
+
+	createMap1(mapArray);
+
+
+
+
+
+
+
+
 
 
 
@@ -571,7 +632,7 @@ int main (int argc, char **argv) {
 
         //setPosition(player2.texture, player2.x, player2.y, player2.w, player2.h);
 
-        createMap1();
+        showMap(mapArray, MAP_1_SIZE);
 
 
 
@@ -595,6 +656,7 @@ int main (int argc, char **argv) {
 	//SDL_DestroyTexture(player2.texture);
 
 	free(laserArray.array);
+	free(mapArray);
 
 	IMG_Quit();
 	SDL_DestroyRenderer(game.renderer);
