@@ -21,8 +21,8 @@ const int LASER_SPEED = 50;
 const int LASER_ADJUSTMENT = 18;
 const int LASER_MAX_QUANTITY = 20;
 
-const int MAP_1_3_SIZE = 43;
-const int MAP_2_SIZE = 33;
+const int MAP_1_3_SIZE = 51;
+const int MAP_2_SIZE = 41;
 
 
 
@@ -576,6 +576,71 @@ void createMap1(SDL_Rect *mapArray) {
     rectangleDownVertical.h = 90;
 
     mapArray[ptr] = rectangleDownVertical;
+    ptr++;
+
+
+    // Radar horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 463;
+        rectangle.y = 673 + i * 218;
+        rectangle.w = 374;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Radar vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 463 + i * 365;
+        rectangle.y = 673;
+        rectangle.w = 9;
+        rectangle.h = 220;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Score horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 900;
+        rectangle.y = 750 + i * 112;
+        rectangle.w = 300;
+        rectangle.h = 38;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Score vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 900 + i * 262;
+        rectangle.y = 750;
+        rectangle.w = 38;
+        rectangle.h = 150;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
 
 }
 
@@ -870,6 +935,71 @@ void createMap2(SDL_Rect *mapArray) {
     rectangleDownVertical.h = 90;
 
     mapArray[ptr] = rectangleDownVertical;
+    ptr++;
+
+
+    // Radar horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 463;
+        rectangle.y = 673 + i * 218;
+        rectangle.w = 374;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Radar vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 463 + i * 365;
+        rectangle.y = 673;
+        rectangle.w = 9;
+        rectangle.h = 220;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Score horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 900;
+        rectangle.y = 750 + i * 112;
+        rectangle.w = 300;
+        rectangle.h = 38;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Score vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 900 + i * 262;
+        rectangle.y = 750;
+        rectangle.w = 38;
+        rectangle.h = 150;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
 
 }
 
@@ -1243,6 +1373,71 @@ void createMap3(SDL_Rect *mapArray) {
     rectangleDownVertical.h = 90;
 
     mapArray[ptr] = rectangleDownVertical;
+    ptr++;
+
+
+    // Radar horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 463;
+        rectangle.y = 673 + i * 218;
+        rectangle.w = 374;
+        rectangle.h = 9;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Radar vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 463 + i * 365;
+        rectangle.y = 673;
+        rectangle.w = 9;
+        rectangle.h = 220;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Score horizontal lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 900;
+        rectangle.y = 750 + i * 112;
+        rectangle.w = 300;
+        rectangle.h = 38;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
+
+
+    // Score vertical lines
+    for (int i = 0; i < 2; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.x = 900 + i * 262;
+        rectangle.y = 750;
+        rectangle.w = 38;
+        rectangle.h = 150;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
 
 }
 
@@ -1260,18 +1455,6 @@ void showMap(SDL_Rect *mapArray, int arraySize) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 int main (int argc, char **argv) {
 
     createWindow();
@@ -1279,17 +1462,9 @@ int main (int argc, char **argv) {
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
     SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
-    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map2.png");
+    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map1.png");
 
     SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
-
-
-
-
-
-
-
-
 
     Character player;
     Character *player_ptr = &player;
@@ -1307,7 +1482,8 @@ int main (int argc, char **argv) {
 
 	SDL_Rect *mapArray;
 
-    int randomMap = (rand() % 3) + 1;
+    //int randomMap = (rand() % 3) + 1;
+    int randomMap = 1;
 
     int randomMapSize;
 
