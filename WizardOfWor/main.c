@@ -157,18 +157,19 @@ void createLaser(Character *player, LaserArray *laserArray) {
 /*
   This function execute the given by the computer mouse or the keyboard respectively
 */
-void inputAction(Character *player, LaserArray *laserArray) {
+int inputAction(Character *player, LaserArray *laserArray) {
 
     SDL_Event event;
+
+    int running = 1;
 
     while(SDL_PollEvent(&event)) {
 
         switch(event.type) {
 
-
             case SDL_QUIT:
 
-                exit(0);
+                running = 0;
                 break;
 
             case SDL_KEYDOWN:
@@ -218,6 +219,8 @@ void inputAction(Character *player, LaserArray *laserArray) {
         }
 
     }
+
+    return running;
 
 }
 
@@ -1523,8 +1526,10 @@ int main (int argc, char **argv) {
 
     }
 
+    int running = 1;
+
     // Infinite loop
-	while(1) {
+	while(running) {
 
         SDL_SetRenderDrawColor(game.renderer, 0, 102, 204, 0);
         SDL_RenderClear(game.renderer);
@@ -1537,7 +1542,7 @@ int main (int argc, char **argv) {
 
         showMap(mapArray, randomMapSize);
 
-        inputAction(player_ptr, laserArray_ptr);
+        running = inputAction(player_ptr, laserArray_ptr);
 
         laserAction(player_ptr, laserArray_ptr);
 
@@ -1548,8 +1553,6 @@ int main (int argc, char **argv) {
 	}
 
 	// Free memory
-	printf("Aqui se libera la memoria");
-
 	SDL_DestroyTexture(player.texture);
 
 	free(laserArray.array);
