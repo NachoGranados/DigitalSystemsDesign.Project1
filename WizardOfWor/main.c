@@ -13,10 +13,10 @@ const int SCREEN_HEIGHT = 900;
 const int LASER_WIDTH = 40;
 const int LASER_HEIGHT = 40;
 
-const int CHARACTER_POSX = 95;
+const int CHARACTER_POSX = 94;
 const int CHARACTER_POSY = 47;
-const int CHARACTER_WIDTH = 80;
-const int CHARACTER_HEIGHT = 80;
+const int CHARACTER_WIDTH = 71;
+const int CHARACTER_HEIGHT = 71;
 const int CHARACTER_SPEED = 13;
 
 const int LASER_SPEED = 50;
@@ -25,6 +25,10 @@ const int LASER_MAX_QUANTITY = 20;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
+
+const int RECTANGLE_MARGIN = 1;
+
+
 
 
 // Structures definition
@@ -96,7 +100,6 @@ void createWindow() {
 
 }
 
-
 /*
   This function assigns every attribute of the given texture and it shows them in the window
 */
@@ -157,11 +160,13 @@ void createLaser(Character *player, LaserArray *laserArray) {
 /*
   This function execute the given by the computer mouse or the keyboard respectively
 */
-int inputAction(Character *player, LaserArray *laserArray) {
+int inputAction(Character *player, LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
 
     SDL_Event event;
 
     int running = 1;
+
+    int collision;
 
     while(SDL_PollEvent(&event)) {
 
@@ -179,33 +184,59 @@ int inputAction(Character *player, LaserArray *laserArray) {
                     // Move player upwards
                     case SDLK_UP:
 
-                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
-                        player->y -= CHARACTER_SPEED;
-                        player->direction = 0;
+                        collision = checkCollison(player, mapArray, randomMapSize, 0);
+
+                        if (collision != 1){
+
+                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
+                            player->y -= CHARACTER_SPEED;
+                            player->direction = 0;
+
+                        }
+
                         break;
 
                     // Move player downwards
                     case SDLK_DOWN:
 
+                        collision = checkCollison(player, mapArray, randomMapSize, 1);
+
+                        if (collision != 1) {
+
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
                         player->y += CHARACTER_SPEED;
                         player->direction = 1;
+
+                        }
+
                         break;
 
                     // Move player leftwards
                     case SDLK_LEFT:
 
+                        collision = checkCollison(player, mapArray, randomMapSize, 2);
+
+                        if (collision != 1){
+
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
                         player->x -= CHARACTER_SPEED;
                         player->direction = 2;
+
+                        }
                         break;
 
                     // Move player rightwards
                     case SDLK_RIGHT:
 
+                        collision = checkCollison(player, mapArray, randomMapSize, 3);
+
+                        if (collision != 1){
+
                         player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
                         player->x += CHARACTER_SPEED;
                         player->direction = 3;
+
+                        }
                         break;
 
                     // Player fire
@@ -214,7 +245,7 @@ int inputAction(Character *player, LaserArray *laserArray) {
                         createLaser(player, laserArray);
                         break;
 
-                }
+             }
 
         }
 
@@ -223,6 +254,156 @@ int inputAction(Character *player, LaserArray *laserArray) {
     return running;
 
 }
+
+
+int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int direction) {
+
+    int playerDimension;
+
+    int playerFuturePosition;
+
+    switch (direction) {
+
+        //Up collision
+        case 0:
+
+            playerDimension = player->y;
+
+            playerFuturePosition = playerDimension - CHARACTER_SPEED;
+
+            for(int i = 0; i < randomMapSize; i++) {
+
+                // Rectangles farthest up from the player
+                if (mapArray[i].y + mapArray[i].h <= playerDimension &&
+
+                    // The player is within the X range of the rectangle
+                    player->x >= mapArray[i].x - RECTANGLE_MARGIN &&
+                    player->x <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
+
+                    // The player oversteps the rectangle
+                    playerFuturePosition < mapArray[i].y + mapArray[i].h) {
+
+                    printf(" UP \nplayer.y = %d, rectangle.y = %d\n\n",
+                           playerFuturePosition, mapArray[i].y + mapArray[i].h);
+
+                    return 1;
+
+                }
+
+            }
+
+            break;
+
+        //Down collision
+        case 1:
+
+            playerDimension = player->y + player->h;
+
+            playerFuturePosition = playerDimension + CHARACTER_SPEED;
+
+            for(int i = 0; i < randomMapSize; i++) {
+
+                // Rectangles farthest down from the player
+                if (mapArray[i].y >= playerDimension &&
+
+                    // The player is within the X range of the rectangle
+                    player->x >= mapArray[i].x - RECTANGLE_MARGIN &&
+                    player->x <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
+
+                    // The player oversteps the rectangle
+                    playerFuturePosition > mapArray[i].y) {
+
+                    printf("DOWN \nplayer.y = %d, rectangle.y = %d\n\n",
+                           playerFuturePosition, mapArray[i].y);
+
+                    return 1;
+
+                }
+
+            }
+
+            break;
+
+        //Left collision
+        case 2:
+
+            playerDimension = player->x;
+
+            playerFuturePosition = playerDimension - CHARACTER_SPEED;
+
+            for(int i = 0; i < randomMapSize; i++) {
+
+                // Rectangles farthest left from the player
+                if (mapArray[i].x <= playerDimension &&
+
+                    // The player is within the Y range of the rectangle
+                    player->y >= mapArray[i].y - RECTANGLE_MARGIN &&
+                    player->y <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
+
+                    // The player oversteps the rectangle
+                    playerFuturePosition < mapArray[i].x + mapArray[i].w) {
+
+                    printf("LEFT \nplayer.x = %d, rectangle.x = %d\n\n",
+                           playerFuturePosition, mapArray[i].x + mapArray[i].w);
+
+                    return 1;
+
+                }
+
+            }
+
+            break;
+
+        //Right collision
+        case 3:
+
+            playerDimension = player->x + player->w;
+
+            playerFuturePosition = playerDimension + CHARACTER_SPEED;
+
+            for(int i = 0; i < randomMapSize; i++) {
+
+                // Rectangles farthest right from the player
+                if (mapArray[i].x >= playerDimension &&
+
+                    // The player is within the Y range of the rectangle
+                    player->y >= mapArray[i].y - RECTANGLE_MARGIN &&
+                    player->y <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
+
+                    // The player oversteps the rectangle
+                    playerFuturePosition > mapArray[i].x) {
+
+                    printf("RIGHT \nplayer.x = %d, rectangle.x = %d\n\n",
+                           playerFuturePosition, mapArray[i].x);
+
+                    return 1;
+
+                }
+
+            }
+
+            break;
+
+    }
+
+    return 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
   This function assigns the correct position of every laser in the given array based on its positions
@@ -290,7 +471,7 @@ void createMap1(SDL_Rect *mapArray) {
     mapArray[ptr] = rectangleCenter;
     ptr++;
 
-
+    //printf("%d \n",mapArray[0].x);
     // First level side horizontal lines
     for (int i = 0; i < 2; i++) {
 
@@ -1475,7 +1656,8 @@ int main (int argc, char **argv) {
 
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-    SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
+    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
+    SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map1.png");
 
     SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
 
@@ -1542,7 +1724,7 @@ int main (int argc, char **argv) {
 
         showMap(mapArray, randomMapSize);
 
-        running = inputAction(player_ptr, laserArray_ptr);
+        running = inputAction(player_ptr, laserArray_ptr, mapArray, randomMapSize);
 
         laserAction(player_ptr, laserArray_ptr);
 
