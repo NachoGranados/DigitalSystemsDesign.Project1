@@ -25,8 +25,6 @@ const int ENTITY_SPEED = 13;
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
 
-const int RECTANGLE_MARGIN = 0;
-
 const int UP = 0;
 const int DOWN = 1;
 const int LEFT = 2;
@@ -149,7 +147,7 @@ void createLaser(Entity *player, LaserArray *laserArray) {
 
 
 int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int direction,
-                  int width, int height, int adjustment) {
+                  int width, int height, int adjustment, int speed) {
 
     int entityDimension;
 
@@ -162,7 +160,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityDimension = entity->y - adjustment;
 
-            entityFuturePosition = entityDimension - ENTITY_SPEED;
+            entityFuturePosition = entityDimension - speed;
 
             for(int i = 0; i < randomMapSize; i++) {
 
@@ -170,8 +168,8 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
                 if (mapArray[i].y + mapArray[i].h <= entityDimension &&
 
                     // The entity is within the X range of the rectangle
-                    entity->x - adjustment >= mapArray[i].x - RECTANGLE_MARGIN &&
-                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
+                    entity->x - adjustment >= mapArray[i].x &&
+                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
 
                     // The entity oversteps the rectangle
                     entityFuturePosition < mapArray[i].y + mapArray[i].h) {
@@ -192,7 +190,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityDimension = entity->y - adjustment + height;
 
-            entityFuturePosition = entityDimension + ENTITY_SPEED;
+            entityFuturePosition = entityDimension + speed;
 
             for(int i = 0; i < randomMapSize; i++) {
 
@@ -200,8 +198,8 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
                 if (mapArray[i].y >= entityDimension &&
 
                     // The entity is within the X range of the rectangle
-                    entity->x - adjustment >= mapArray[i].x - RECTANGLE_MARGIN &&
-                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
+                    entity->x - adjustment >= mapArray[i].x &&
+                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
 
                     // The entity oversteps the rectangle
                     entityFuturePosition > mapArray[i].y) {
@@ -222,7 +220,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityDimension = entity->x - adjustment;
 
-            entityFuturePosition = entityDimension - ENTITY_SPEED;
+            entityFuturePosition = entityDimension - speed;
 
             for(int i = 0; i < randomMapSize; i++) {
 
@@ -230,8 +228,8 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
                 if (mapArray[i].x <= entityDimension &&
 
                     // The entity is within the Y range of the rectangle
-                    entity->y - adjustment >= mapArray[i].y - RECTANGLE_MARGIN &&
-                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
+                    entity->y - adjustment >= mapArray[i].y &&
+                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
 
                     // The entity oversteps the rectangle
                     entityFuturePosition < mapArray[i].x + mapArray[i].w) {
@@ -252,7 +250,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityDimension = entity->x - adjustment + width;
 
-            entityFuturePosition = entityDimension + ENTITY_SPEED;
+            entityFuturePosition = entityDimension + speed;
 
             for(int i = 0; i < randomMapSize; i++) {
 
@@ -260,8 +258,8 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
                 if (mapArray[i].x >= entityDimension &&
 
                     // The entity is within the Y range of the rectangle
-                    entity->y - adjustment >= mapArray[i].y - RECTANGLE_MARGIN &&
-                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
+                    entity->y - adjustment >= mapArray[i].y &&
+                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
 
                     // The entity oversteps the rectangle
                     entityFuturePosition > mapArray[i].x) {
@@ -313,7 +311,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     case SDLK_UP:
 
                         collision = checkCollison(player, mapArray, randomMapSize, UP,
-                                                  player->w, player->h, 0);
+                                                  player->w, player->h, 0, ENTITY_SPEED);
 
                         if (collision != 1){
 
@@ -329,7 +327,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     case SDLK_DOWN:
 
                         collision = checkCollison(player, mapArray, randomMapSize, DOWN,
-                                                  player->w, player->h, 0);
+                                                  player->w, player->h, 0, ENTITY_SPEED);
 
                         if (collision != 1) {
 
@@ -345,7 +343,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     case SDLK_LEFT:
 
                         collision = checkCollison(player, mapArray, randomMapSize, LEFT,
-                                                  player->w, player->h, 0);
+                                                  player->w, player->h, 0, ENTITY_SPEED);
 
                         if (collision != 1){
 
@@ -361,7 +359,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     case SDLK_RIGHT:
 
                         collision = checkCollison(player, mapArray, randomMapSize, RIGHT,
-                                                  player->w, player->h, 0);
+                                                  player->w, player->h, 0, ENTITY_SPEED);
 
                         if (collision != 1){
 
@@ -411,7 +409,7 @@ void laserAction(LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) 
         laser = &laserArray->array[i];
 
         collision = checkCollison(laser, mapArray, randomMapSize, laser->direction, ENTITY_WIDTH,
-                                  ENTITY_HEIGHT, LASER_ADJUSTMENT);
+                                  ENTITY_HEIGHT, LASER_ADJUSTMENT, LASER_SPEED);
 
         if (collision == 0) {
 
