@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -1692,8 +1693,10 @@ int main (int argc, char **argv) {
 	// Map creation
 	SDL_Rect *mapArray;
 
-    //int randomMap = (rand() % 3) + 1;
-    int randomMap = 3;
+	srand(time(0));
+
+    int randomMap = (rand() % 3) + 1;
+    //int randomMap = 3;
 
     int randomMapSize;
 

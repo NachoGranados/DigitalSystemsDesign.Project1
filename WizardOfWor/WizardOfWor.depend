@@ -565,10 +565,11 @@
 	"begin_code.h"
 	"close_code.h"
 
-1629160972 source:/home/nachogranados/Documentos/GithubProjects/SDL2/WizardOfWor/main.c
+1629231585 source:/home/nachogranados/Documentos/GithubProjects/SDL2/WizardOfWor/main.c
 	<stdlib.h>
 	<stdio.h>
 	<stdbool.h>
+	<time.h>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
 
