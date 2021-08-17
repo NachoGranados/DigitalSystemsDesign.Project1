@@ -146,13 +146,157 @@ void createLaser(Entity *player, LaserArray *laserArray) {
 
 }
 
+/*
+  This function checks recursively if the given entity collides up with a rectangle
+*/
+int checkUpCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
+                    int width, int height, int adjustment, int entityDimension,
+                    int entityFuturePosition, int i) {
 
-int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int direction,
-                  int width, int height, int adjustment, int speed) {
+    // Stop case
+    if (i >= randomMapSize) {
+
+        return 0;
+
+    }
+
+    // Rectangles farthest up from the entity
+    if (mapArray[i].y + mapArray[i].h <= entityDimension &&
+
+        // The entity is within the X range of the rectangle
+        entity->x - adjustment >= mapArray[i].x &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition < mapArray[i].y + mapArray[i].h) {
+
+        return 1;
+
+    } else {
+
+        return checkUpCollison(entity, mapArray, randomMapSize, width, height, adjustment,
+                               entityDimension, entityFuturePosition, i + 1);
+
+    }
+
+}
+
+/*
+  This function checks recursively if the given entity collides down with a rectangle
+*/
+int checkDownCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
+                      int width, int height, int adjustment, int entityDimension,
+                      int entityFuturePosition, int i) {
+
+    // Stop case
+    if (i >= randomMapSize) {
+
+        return 0;
+
+    }
+
+    // Rectangles farthest down from the entity
+    if (mapArray[i].y >= entityDimension &&
+
+        // The entity is within the X range of the rectangle
+        entity->x - adjustment >= mapArray[i].x &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].y) {
+
+        return 1;
+
+    } else {
+
+        return checkDownCollison(entity, mapArray, randomMapSize, width, height, adjustment,
+                                 entityDimension, entityFuturePosition, i + 1);
+
+    }
+
+}
+
+/*
+  This function checks recursively if the given entity collides to the left with a rectangle
+*/
+int checkLeftCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
+                      int width, int height, int adjustment, int entityDimension,
+                      int entityFuturePosition, int i) {
+
+    // Stop case
+    if (i >= randomMapSize) {
+
+        return 0;
+
+    }
+
+    // Rectangles farthest left from the entity
+    if (mapArray[i].x <= entityDimension &&
+
+        // The entity is within the Y range of the rectangle
+        entity->y - adjustment >= mapArray[i].y &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition < mapArray[i].x + mapArray[i].w) {
+
+        return 1;
+
+    } else {
+
+        return checkLeftCollison(entity, mapArray, randomMapSize, width, height, adjustment,
+                                 entityDimension, entityFuturePosition, i + 1);
+
+    }
+
+}
+
+/*
+  This function checks recursively if the given entity collides to the right with a rectangle
+*/
+int checkRightCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
+                       int width, int height, int adjustment, int entityDimension,
+                       int entityFuturePosition, int i) {
+
+    // Stop case
+    if (i >= randomMapSize) {
+
+        return 0;
+
+    }
+
+    // Rectangles farthest right from the entity
+    if (mapArray[i].x >= entityDimension &&
+
+        // The entity is within the Y range of the rectangle
+        entity->y - adjustment >= mapArray[i].y &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].x) {
+
+        return 1;
+
+    } else {
+
+        return checkRightCollison(entity, mapArray, randomMapSize, width, height, adjustment,
+                                  entityDimension, entityFuturePosition, i + 1);
+
+    }
+
+}
+
+/*
+  This function checks if the given entity collides with a rectangle in the respective direction
+*/
+int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int width,
+                  int height, int speed, int adjustment, int direction) {
 
     int entityDimension;
 
     int entityFuturePosition;
+
+    int result;
 
     switch (direction) {
 
@@ -163,6 +307,20 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityFuturePosition = entityDimension - speed;
 
+            result = checkUpCollison(entity, mapArray, randomMapSize,width, height, adjustment,
+                                     entityDimension, entityFuturePosition, 0);
+
+
+
+
+
+
+
+
+
+
+
+            /*
             for(int i = 0; i < randomMapSize; i++) {
 
                 // Rectangles farthest up from the entity
@@ -183,6 +341,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
                 }
 
             }
+            */
 
             break;
 
@@ -193,6 +352,13 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityFuturePosition = entityDimension + speed;
 
+            result = checkDownCollison(entity, mapArray, randomMapSize,width, height, adjustment,
+                                       entityDimension, entityFuturePosition, 0);
+
+
+
+
+/*
             for(int i = 0; i < randomMapSize; i++) {
 
                 // Rectangles farthest down from the entity
@@ -212,7 +378,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
                 }
 
-            }
+            }*/
 
             break;
 
@@ -223,6 +389,15 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityFuturePosition = entityDimension - speed;
 
+            result = checkLeftCollison(entity, mapArray, randomMapSize,width, height, adjustment,
+                                       entityDimension, entityFuturePosition, 0);
+
+
+
+
+
+
+            /*
             for(int i = 0; i < randomMapSize; i++) {
 
                 // Rectangles farthest left from the entity
@@ -242,7 +417,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
                 }
 
-            }
+            }*/
 
             break;
 
@@ -253,6 +428,14 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
             entityFuturePosition = entityDimension + speed;
 
+            result = checkRightCollison(entity, mapArray, randomMapSize,width, height, adjustment,
+                                        entityDimension, entityFuturePosition, 0);
+
+
+
+
+
+/*
             for(int i = 0; i < randomMapSize; i++) {
 
                 // Rectangles farthest right from the entity
@@ -272,16 +455,15 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int dir
 
                 }
 
-            }
+            }*/
 
             break;
 
     }
 
-    return 0;
+    return result;
 
 }
-
 
 /*
   This function execute the given by the computer mouse or the keyboard respectively
@@ -311,8 +493,8 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     // Move player upwards
                     case SDLK_UP:
 
-                        collision = checkCollison(player, mapArray, randomMapSize, UP,
-                                                  player->w, player->h, 0, ENTITY_SPEED);
+                        collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
+                                                  ENTITY_HEIGHT, ENTITY_SPEED, 0, 0);
 
                         if (collision != 1){
 
@@ -327,8 +509,8 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     // Move player downwards
                     case SDLK_DOWN:
 
-                        collision = checkCollison(player, mapArray, randomMapSize, DOWN,
-                                                  player->w, player->h, 0, ENTITY_SPEED);
+                        collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
+                                                  ENTITY_HEIGHT, ENTITY_SPEED, 0, 1);
 
                         if (collision != 1) {
 
@@ -343,8 +525,8 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     // Move player leftwards
                     case SDLK_LEFT:
 
-                        collision = checkCollison(player, mapArray, randomMapSize, LEFT,
-                                                  player->w, player->h, 0, ENTITY_SPEED);
+                        collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
+                                                  ENTITY_HEIGHT, ENTITY_SPEED, 0, 2);
 
                         if (collision != 1){
 
@@ -359,8 +541,8 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     // Move player rightwards
                     case SDLK_RIGHT:
 
-                        collision = checkCollison(player, mapArray, randomMapSize, RIGHT,
-                                                  player->w, player->h, 0, ENTITY_SPEED);
+                       collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
+                                                 ENTITY_HEIGHT, ENTITY_SPEED, 0, 3);
 
                         if (collision != 1){
 
@@ -389,13 +571,6 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
 
 }
 
-
-
-
-
-
-
-
 /*
   This function assigns the correct position of every laser in the given array based on its positions
 */
@@ -409,30 +584,40 @@ void laserAction(LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) 
 
         laser = &laserArray->array[i];
 
-        collision = checkCollison(laser, mapArray, randomMapSize, laser->direction, ENTITY_WIDTH,
-                                  ENTITY_HEIGHT, LASER_ADJUSTMENT, LASER_SPEED);
+        collision = checkCollison(laser, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                                   LASER_SPEED, LASER_ADJUSTMENT, laser->direction);
 
         if (collision == 0) {
 
-            // Up
-            if (laser->direction == 0) { //&& laserArray->array[i].y > -LASER_HEIGHT) {
+            switch(laser->direction) {
 
-                laser->y -= LASER_SPEED;
+                // Up
+                case 0:
 
-            // Down
-            } else if (laser->direction == 1) { //&& laserArray->array[i].y < SCREEN_HEIGHT)  {
+                    laser->y -= LASER_SPEED;
 
-                laser->y += LASER_SPEED;
+                    break;
 
-            // Left
-            } else if (laser->direction == 2) { // && laserArray->array[i].x > -LASER_WIDTH) {
+                // Down
+                case 1:
 
-                laser->x -= LASER_SPEED;
+                    laser->y += LASER_SPEED;
 
-            // Right
-            } else if (laser->direction == 3) { // && laserArray->array[i].x < SCREEN_WIDTH) {
+                    break;
 
-                laser->x += LASER_SPEED;
+                // Left
+                case 2:
+
+                    laser->x -= LASER_SPEED;
+
+                    break;
+
+                // Right
+                case 3:
+
+                    laser->x += LASER_SPEED;
+
+                    break;
 
             }
 
@@ -451,7 +636,6 @@ void laserAction(LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) 
     }
 
 }
-
 
 /*
   This function creates the necessary rectangles to build the first map
@@ -1669,7 +1853,6 @@ int main (int argc, char **argv) {
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
     SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
-    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map1.png");
 
     SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
 
