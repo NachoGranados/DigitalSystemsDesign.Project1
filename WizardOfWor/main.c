@@ -10,23 +10,28 @@
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 900;
 
-const int LASER_WIDTH = 40;
-const int LASER_HEIGHT = 40;
-
-const int CHARACTER_POSX = 94;
-const int CHARACTER_POSY = 47;
-const int CHARACTER_WIDTH = 71;
-const int CHARACTER_HEIGHT = 71;
-const int CHARACTER_SPEED = 13;
-
+const int LASER_WIDTH = 36;
+const int LASER_HEIGHT = 36;
 const int LASER_SPEED = 50;
-const int LASER_ADJUSTMENT = 18;
+const int LASER_ADJUSTMENT = 13;
 const int LASER_MAX_QUANTITY = 20;
+
+const int ENTITY_POSX = 94;
+const int ENTITY_POSY = 48;
+const int ENTITY_WIDTH = 65;
+const int ENTITY_HEIGHT = 65;
+const int ENTITY_SPEED = 13;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
 
-const int RECTANGLE_MARGIN = 1;
+const int RECTANGLE_MARGIN = 0;
+
+const int UP = 0;
+const int DOWN = 1;
+const int LEFT = 2;
+const int RIGHT = 3;
+
 
 
 
@@ -57,35 +62,19 @@ typedef struct {
 
     SDL_Texture *texture;
 
-} Character;
-
-typedef struct {
-
-    int x;
-    int y;
-    int w;
-    int h;
-
-    int direction; // up = 0
-                   // down = 1
-                   // left = 2
-                   // right = 3
-
-    SDL_Texture *texture;
-
-} Laser;
+} Entity;
 
 typedef struct {
 
     int quantity;
 
-    Laser *array;
+    Entity *array;
 
 } LaserArray;
 
 
 /*
-  This function creates and sets specific characteristics to the window
+  This function creates and sets specific chracteristics to the window
 */
 void createWindow() {
 
@@ -120,16 +109,17 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
   This function creates and stores the laser's structures in the give array and it assigns them
   the attributes they need
   */
-void createLaser(Character *player, LaserArray *laserArray) {
+void createLaser(Entity *player, LaserArray *laserArray) {
 
     if (laserArray->quantity < LASER_MAX_QUANTITY) {
 
-        Laser laser;
+        Entity laser;
         laser.x = player->x + LASER_ADJUSTMENT;
         laser.y = player->y + LASER_ADJUSTMENT;
         laser.w = LASER_WIDTH;
         laser.h = LASER_HEIGHT;
         laser.direction = player->direction;
+        laser.health = 1;
 
         // Vertical texture
         if (player->direction < 2) {
@@ -157,134 +147,37 @@ void createLaser(Character *player, LaserArray *laserArray) {
 
 }
 
-/*
-  This function execute the given by the computer mouse or the keyboard respectively
-*/
-int inputAction(Character *player, LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
 
-    SDL_Event event;
+int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int direction,
+                  int width, int height, int adjustment) {
 
-    int running = 1;
+    int entityDimension;
 
-    int collision;
-
-    while(SDL_PollEvent(&event)) {
-
-        switch(event.type) {
-
-            case SDL_QUIT:
-
-                running = 0;
-                break;
-
-            case SDL_KEYDOWN:
-
-                switch (event.key.keysym.sym) {
-
-                    // Move player upwards
-                    case SDLK_UP:
-
-                        collision = checkCollison(player, mapArray, randomMapSize, 0);
-
-                        if (collision != 1){
-
-                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
-                            player->y -= CHARACTER_SPEED;
-                            player->direction = 0;
-
-                        }
-
-                        break;
-
-                    // Move player downwards
-                    case SDLK_DOWN:
-
-                        collision = checkCollison(player, mapArray, randomMapSize, 1);
-
-                        if (collision != 1) {
-
-                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
-                        player->y += CHARACTER_SPEED;
-                        player->direction = 1;
-
-                        }
-
-                        break;
-
-                    // Move player leftwards
-                    case SDLK_LEFT:
-
-                        collision = checkCollison(player, mapArray, randomMapSize, 2);
-
-                        if (collision != 1){
-
-                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
-                        player->x -= CHARACTER_SPEED;
-                        player->direction = 2;
-
-                        }
-                        break;
-
-                    // Move player rightwards
-                    case SDLK_RIGHT:
-
-                        collision = checkCollison(player, mapArray, randomMapSize, 3);
-
-                        if (collision != 1){
-
-                        player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
-                        player->x += CHARACTER_SPEED;
-                        player->direction = 3;
-
-                        }
-                        break;
-
-                    // Player fire
-                    case SDLK_SPACE:
-
-                        createLaser(player, laserArray);
-                        break;
-
-             }
-
-        }
-
-    }
-
-    return running;
-
-}
-
-
-int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int direction) {
-
-    int playerDimension;
-
-    int playerFuturePosition;
+    int entityFuturePosition;
 
     switch (direction) {
 
         //Up collision
         case 0:
 
-            playerDimension = player->y;
+            entityDimension = entity->y - adjustment;
 
-            playerFuturePosition = playerDimension - CHARACTER_SPEED;
+            entityFuturePosition = entityDimension - ENTITY_SPEED;
 
             for(int i = 0; i < randomMapSize; i++) {
 
-                // Rectangles farthest up from the player
-                if (mapArray[i].y + mapArray[i].h <= playerDimension &&
+                // Rectangles farthest up from the entity
+                if (mapArray[i].y + mapArray[i].h <= entityDimension &&
 
-                    // The player is within the X range of the rectangle
-                    player->x >= mapArray[i].x - RECTANGLE_MARGIN &&
-                    player->x <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
+                    // The entity is within the X range of the rectangle
+                    entity->x - adjustment >= mapArray[i].x - RECTANGLE_MARGIN &&
+                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
 
-                    // The player oversteps the rectangle
-                    playerFuturePosition < mapArray[i].y + mapArray[i].h) {
+                    // The entity oversteps the rectangle
+                    entityFuturePosition < mapArray[i].y + mapArray[i].h) {
 
                     printf(" UP \nplayer.y = %d, rectangle.y = %d\n\n",
-                           playerFuturePosition, mapArray[i].y + mapArray[i].h);
+                    entityFuturePosition, mapArray[i].y + mapArray[i].h);
 
                     return 1;
 
@@ -297,24 +190,24 @@ int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int 
         //Down collision
         case 1:
 
-            playerDimension = player->y + player->h;
+            entityDimension = entity->y - adjustment + height;
 
-            playerFuturePosition = playerDimension + CHARACTER_SPEED;
+            entityFuturePosition = entityDimension + ENTITY_SPEED;
 
             for(int i = 0; i < randomMapSize; i++) {
 
-                // Rectangles farthest down from the player
-                if (mapArray[i].y >= playerDimension &&
+                // Rectangles farthest down from the entity
+                if (mapArray[i].y >= entityDimension &&
 
-                    // The player is within the X range of the rectangle
-                    player->x >= mapArray[i].x - RECTANGLE_MARGIN &&
-                    player->x <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
+                    // The entity is within the X range of the rectangle
+                    entity->x - adjustment >= mapArray[i].x - RECTANGLE_MARGIN &&
+                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w + RECTANGLE_MARGIN &&
 
-                    // The player oversteps the rectangle
-                    playerFuturePosition > mapArray[i].y) {
+                    // The entity oversteps the rectangle
+                    entityFuturePosition > mapArray[i].y) {
 
                     printf("DOWN \nplayer.y = %d, rectangle.y = %d\n\n",
-                           playerFuturePosition, mapArray[i].y);
+                    entityFuturePosition, mapArray[i].y);
 
                     return 1;
 
@@ -327,24 +220,24 @@ int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int 
         //Left collision
         case 2:
 
-            playerDimension = player->x;
+            entityDimension = entity->x - adjustment;
 
-            playerFuturePosition = playerDimension - CHARACTER_SPEED;
+            entityFuturePosition = entityDimension - ENTITY_SPEED;
 
             for(int i = 0; i < randomMapSize; i++) {
 
-                // Rectangles farthest left from the player
-                if (mapArray[i].x <= playerDimension &&
+                // Rectangles farthest left from the entity
+                if (mapArray[i].x <= entityDimension &&
 
-                    // The player is within the Y range of the rectangle
-                    player->y >= mapArray[i].y - RECTANGLE_MARGIN &&
-                    player->y <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
+                    // The entity is within the Y range of the rectangle
+                    entity->y - adjustment >= mapArray[i].y - RECTANGLE_MARGIN &&
+                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
 
-                    // The player oversteps the rectangle
-                    playerFuturePosition < mapArray[i].x + mapArray[i].w) {
+                    // The entity oversteps the rectangle
+                    entityFuturePosition < mapArray[i].x + mapArray[i].w) {
 
                     printf("LEFT \nplayer.x = %d, rectangle.x = %d\n\n",
-                           playerFuturePosition, mapArray[i].x + mapArray[i].w);
+                    entityFuturePosition, mapArray[i].x + mapArray[i].w);
 
                     return 1;
 
@@ -357,24 +250,24 @@ int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int 
         //Right collision
         case 3:
 
-            playerDimension = player->x + player->w;
+            entityDimension = entity->x - adjustment + width;
 
-            playerFuturePosition = playerDimension + CHARACTER_SPEED;
+            entityFuturePosition = entityDimension + ENTITY_SPEED;
 
             for(int i = 0; i < randomMapSize; i++) {
 
-                // Rectangles farthest right from the player
-                if (mapArray[i].x >= playerDimension &&
+                // Rectangles farthest right from the entity
+                if (mapArray[i].x >= entityDimension &&
 
-                    // The player is within the Y range of the rectangle
-                    player->y >= mapArray[i].y - RECTANGLE_MARGIN &&
-                    player->y <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
+                    // The entity is within the Y range of the rectangle
+                    entity->y - adjustment >= mapArray[i].y - RECTANGLE_MARGIN &&
+                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h + RECTANGLE_MARGIN &&
 
-                    // The player oversteps the rectangle
-                    playerFuturePosition > mapArray[i].x) {
+                    // The entity oversteps the rectangle
+                    entityFuturePosition > mapArray[i].x) {
 
                     printf("RIGHT \nplayer.x = %d, rectangle.x = %d\n\n",
-                           playerFuturePosition, mapArray[i].x);
+                    entityFuturePosition, mapArray[i].x);
 
                     return 1;
 
@@ -391,12 +284,111 @@ int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int 
 }
 
 
+/*
+  This function execute the given by the computer mouse or the keyboard respectively
+*/
+int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
 
+    SDL_Event event;
 
+    int running = 1;
 
+    int collision;
 
+    while(SDL_PollEvent(&event)) {
 
+        switch(event.type) {
 
+            case SDL_QUIT:
+
+                running = 0;
+
+                break;
+
+            case SDL_KEYDOWN:
+
+                switch (event.key.keysym.sym) {
+
+                    // Move player upwards
+                    case SDLK_UP:
+
+                        collision = checkCollison(player, mapArray, randomMapSize, UP,
+                                                  player->w, player->h, 0);
+
+                        if (collision != 1){
+
+                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
+                            player->y -= ENTITY_SPEED;
+                            player->direction = 0;
+
+                        }
+
+                        break;
+
+                    // Move player downwards
+                    case SDLK_DOWN:
+
+                        collision = checkCollison(player, mapArray, randomMapSize, DOWN,
+                                                  player->w, player->h, 0);
+
+                        if (collision != 1) {
+
+                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
+                            player->y += ENTITY_SPEED;
+                            player->direction = 1;
+
+                        }
+
+                        break;
+
+                    // Move player leftwards
+                    case SDLK_LEFT:
+
+                        collision = checkCollison(player, mapArray, randomMapSize, LEFT,
+                                                  player->w, player->h, 0);
+
+                        if (collision != 1){
+
+                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
+                            player->x -= ENTITY_SPEED;
+                            player->direction = 2;
+
+                        }
+
+                        break;
+
+                    // Move player rightwards
+                    case SDLK_RIGHT:
+
+                        collision = checkCollison(player, mapArray, randomMapSize, RIGHT,
+                                                  player->w, player->h, 0);
+
+                        if (collision != 1){
+
+                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
+                            player->x += ENTITY_SPEED;
+                            player->direction = 3;
+
+                        }
+
+                        break;
+
+                    // Player fire
+                    case SDLK_SPACE:
+
+                        createLaser(player, laserArray);
+
+                        break;
+
+             }
+
+        }
+
+    }
+
+    return running;
+
+}
 
 
 
@@ -408,38 +400,59 @@ int checkCollison(Character *player, SDL_Rect *mapArray, int randomMapSize, int 
 /*
   This function assigns the correct position of every laser in the given array based on its positions
 */
-void laserAction(Character *player, LaserArray *laserArray) {
+void laserAction(LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
+
+    int collision;
+
+    Entity *laser;
 
     for (int i = 0; i < laserArray->quantity; i++) {
 
-        // Up
-        if (laserArray->array[i].direction == 0 && laserArray->array[i].y > -LASER_HEIGHT) {
+        laser = &laserArray->array[i];
 
-            laserArray->array[i].y -= LASER_SPEED;
+        collision = checkCollison(laser, mapArray, randomMapSize, laser->direction, ENTITY_WIDTH,
+                                  ENTITY_HEIGHT, LASER_ADJUSTMENT);
 
-        // Down
-        } else if (laserArray->array[i].direction == 1 && laserArray->array[i].y < SCREEN_HEIGHT)  {
+        if (collision == 0) {
 
-            laserArray->array[i].y += LASER_SPEED;
+            // Up
+            if (laser->direction == 0) { //&& laserArray->array[i].y > -LASER_HEIGHT) {
 
-        // Left
-        } else if (laserArray->array[i].direction == 2 && laserArray->array[i].x > -LASER_WIDTH) {
+                laser->y -= LASER_SPEED;
 
-            laserArray->array[i].x -= LASER_SPEED;
+            // Down
+            } else if (laser->direction == 1) { //&& laserArray->array[i].y < SCREEN_HEIGHT)  {
 
-        // Right
-        } else if (laserArray->array[i].direction == 3 && laserArray->array[i].x < SCREEN_WIDTH) {
+                laser->y += LASER_SPEED;
 
-            laserArray->array[i].x += LASER_SPEED;
+            // Left
+            } else if (laser->direction == 2) { // && laserArray->array[i].x > -LASER_WIDTH) {
+
+                laser->x -= LASER_SPEED;
+
+            // Right
+            } else if (laser->direction == 3) { // && laserArray->array[i].x < SCREEN_WIDTH) {
+
+                laser->x += LASER_SPEED;
+
+            }
+
+            if (laser->health == 1) {
+
+                setPosition(laser->texture, laser->x, laser->y, laser->w, laser->h);
+
+            }
+
+        } else {
+
+            laser->health = 0;
 
         }
-
-        setPosition(laserArray->array[i].texture, laserArray->array[i].x, laserArray->array[i].y,
-                    laserArray->array[i].w, laserArray->array[i].h);
 
     }
 
 }
+
 
 /*
   This function creates the necessary rectangles to build the first map
@@ -471,7 +484,7 @@ void createMap1(SDL_Rect *mapArray) {
     mapArray[ptr] = rectangleCenter;
     ptr++;
 
-    //printf("%d \n",mapArray[0].x);
+
     // First level side horizontal lines
     for (int i = 0; i < 2; i++) {
 
@@ -494,7 +507,7 @@ void createMap1(SDL_Rect *mapArray) {
         SDL_Rect rectangle;
 
         rectangle.x = -6 + i * 186;
-        rectangle.y = 220;
+        rectangle.y = 222;
         rectangle.w = 95;
         rectangle.h = 9;
 
@@ -872,7 +885,7 @@ void createMap2(SDL_Rect *mapArray) {
         SDL_Rect rectangle;
 
         rectangle.x = -6 + i * 1116;
-        rectangle.y = 220;
+        rectangle.y = 222;
         rectangle.w = 95;
         rectangle.h = 9;
 
@@ -887,7 +900,7 @@ void createMap2(SDL_Rect *mapArray) {
         SDL_Rect rectangle;
 
         rectangle.x = 180 + i * 656;
-        rectangle.y = 220;
+        rectangle.y = 222;
         rectangle.w = 186;
         rectangle.h = 9;
 
@@ -1250,7 +1263,7 @@ void createMap3(SDL_Rect *mapArray) {
         SDL_Rect rectangle;
 
         rectangle.x = -6 + i * 1116;
-        rectangle.y = 220;
+        rectangle.y = 222;
         rectangle.w = 95;
         rectangle.h = 9;
 
@@ -1266,7 +1279,7 @@ void createMap3(SDL_Rect *mapArray) {
         SDL_Rect rectangle;
 
         rectangle.x = 367 + i * 280;
-        rectangle.y = 220;
+        rectangle.y = 222;
         rectangle.w = 185;
         rectangle.h = 9;
 
@@ -1656,32 +1669,33 @@ int main (int argc, char **argv) {
 
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
-    SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map1.png");
+    SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
+    //SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Map1.png");
 
     SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
 
     // Player creation
-    Character player;
-    Character *player_ptr = &player;
+    Entity player;
+    Entity *player_ptr = &player;
 	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
-	player.x = CHARACTER_POSX;
-	player.y = CHARACTER_POSY;
-	player.w = CHARACTER_WIDTH;
-	player.h = CHARACTER_HEIGHT;
+	player.x = ENTITY_POSX;
+	player.y = ENTITY_POSY;
+	player.w = ENTITY_WIDTH;
+	player.h = ENTITY_HEIGHT;
 	player.direction = 3; // Cambiarlo con la posicion inicial del jugador
+	player.health = 1;
 
 	// Laser creation
 	LaserArray laserArray;
 	LaserArray *laserArray_ptr = &laserArray;
-	laserArray.array = (Laser*)malloc(10 * sizeof(Laser));
+	laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
 	laserArray.quantity = 0;
 
 	// Map creation
 	SDL_Rect *mapArray;
 
     //int randomMap = (rand() % 3) + 1;
-    int randomMap = 1;
+    int randomMap = 3;
 
     int randomMapSize;
 
@@ -1714,6 +1728,7 @@ int main (int argc, char **argv) {
 	while(running) {
 
         SDL_SetRenderDrawColor(game.renderer, 0, 102, 204, 0);
+
         SDL_RenderClear(game.renderer);
 
         setPosition(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -1726,7 +1741,7 @@ int main (int argc, char **argv) {
 
         running = inputAction(player_ptr, laserArray_ptr, mapArray, randomMapSize);
 
-        laserAction(player_ptr, laserArray_ptr);
+        laserAction(laserArray_ptr, mapArray, randomMapSize);
 
 		SDL_RenderPresent(game.renderer);
 
