@@ -1,11 +1,10 @@
+// Libraries
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
 
 // Constants
 const int SCREEN_WIDTH = 1200;
@@ -22,6 +21,7 @@ const int ENTITY_POSY = 48;
 const int ENTITY_WIDTH = 65;
 const int ENTITY_HEIGHT = 65;
 const int ENTITY_SPEED = 13;
+const int ENTITY_MAX_QUANTITY = 6;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
@@ -30,7 +30,6 @@ const int UP = 0;
 const int DOWN = 1;
 const int LEFT = 2;
 const int RIGHT = 3;
-
 
 // Structures definition
 typedef struct {
@@ -68,7 +67,7 @@ typedef struct {
 
 } LaserArray;
 
-
+// Functions definition
 /*
   This function creates and sets specific chracteristics to the window
 */
@@ -82,22 +81,6 @@ void createWindow() {
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
 	game.renderer = SDL_CreateRenderer(game.window, -1, SDL_RENDERER_ACCELERATED);
-
-}
-
-/*
-  This function assigns every attribute of the given texture and it shows them in the window
-*/
-void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
-
-    SDL_Rect destination;
-
-    destination.x = x;
-    destination.y = y;
-    destination.w = w;
-    destination.h = h;
-
-    SDL_RenderCopy(game.renderer, texture, NULL, &destination);
 
 }
 
@@ -157,15 +140,33 @@ int checkUpCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
 
     }
 
+    // Horizontal lines
     // Rectangles farthest up from the entity
     if (mapArray[i].y + mapArray[i].h <= entityDimension &&
 
         // The entity is within the X range of the rectangle
         entity->x - adjustment >= mapArray[i].x &&
-        entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment + width <= mapArray[i].x + mapArray[i].w &&
 
         // The entity oversteps the rectangle
         entityFuturePosition < mapArray[i].y + mapArray[i].h) {
+
+        return 1;
+
+    // Vertical rectangles
+    // Rectangles farthest up from the entity
+    } else if (mapArray[i].y + mapArray[i].h <= entityDimension &&
+
+       // The rectangle is within the X range of the entity
+        mapArray[i].x >= entity->x - adjustment &&
+        mapArray[i].x + mapArray[i].w <= entity->x - adjustment + width &&
+
+        // The entity is next to the rectangle
+        entity->y - adjustment >= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h + ENTITY_WIDTH &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].y) {
 
         return 1;
 
@@ -192,12 +193,30 @@ int checkDownCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
 
     }
 
+    // Horizontal lines
     // Rectangles farthest down from the entity
     if (mapArray[i].y >= entityDimension &&
 
         // The entity is within the X range of the rectangle
         entity->x - adjustment >= mapArray[i].x &&
-        entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment + width <= mapArray[i].x + mapArray[i].w &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].y) {
+
+        return 1;
+
+    // Vertical rectangles
+    // Rectangles farthest down from the entity
+    } else if (mapArray[i].y >= entityDimension &&
+
+        // The rectangle is within the X range of the entity
+        mapArray[i].x >= entity->x - adjustment &&
+        mapArray[i].x + mapArray[i].w <= entity->x - adjustment + width &&
+
+        // The entity is next to the rectangle
+        entity->y - adjustment + height <= mapArray[i].y &&
+        entity->y - adjustment + height >= mapArray[i].y - ENTITY_WIDTH &&
 
         // The entity oversteps the rectangle
         entityFuturePosition > mapArray[i].y) {
@@ -227,15 +246,33 @@ int checkLeftCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
 
     }
 
+    // Vertical rectangles
     // Rectangles farthest left from the entity
     if (mapArray[i].x <= entityDimension &&
 
         // The entity is within the Y range of the rectangle
         entity->y - adjustment >= mapArray[i].y &&
-        entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment + height<= mapArray[i].y + mapArray[i].h &&
 
         // The entity oversteps the rectangle
         entityFuturePosition < mapArray[i].x + mapArray[i].w) {
+
+        return 1;
+
+    // Horizontal rectangles
+    // Rectangles farthest left from the entity
+    } else if (mapArray[i].x <= entityDimension &&
+
+        // The rectangle is within the Y range of the entity
+        mapArray[i].y >= entity->y - adjustment &&
+        mapArray[i].y + mapArray[i].h <= entity->y - adjustment + height &&
+
+        // The entity is next to the rectangle
+        entity->x - adjustment >= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w + ENTITY_WIDTH &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].x) {
 
         return 1;
 
@@ -262,12 +299,30 @@ int checkRightCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
 
     }
 
+    // Vertical rectangles
     // Rectangles farthest right from the entity
     if (mapArray[i].x >= entityDimension &&
 
         // The entity is within the Y range of the rectangle
         entity->y - adjustment >= mapArray[i].y &&
-        entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment + height <= mapArray[i].y + mapArray[i].h &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].x) {
+
+        return 1;
+
+    // Horizontal rectangles
+    // Rectangles farthest right from the entity
+    } else if (mapArray[i].x >= entityDimension &&
+
+        // The rectangle is within the Y range of the entity
+        mapArray[i].y >= entity->y - adjustment &&
+        mapArray[i].y + mapArray[i].h <= entity->y - adjustment + height &&
+
+        // The entity is next to the rectangle
+        entity->x - adjustment + width >= mapArray[i].x - ENTITY_WIDTH &&
+        entity->x - adjustment + width <= mapArray[i].x &&
 
         // The entity oversteps the rectangle
         entityFuturePosition > mapArray[i].x) {
@@ -282,7 +337,6 @@ int checkRightCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
     }
 
 }
-
 
 /*
   This function checks if the given entity collides with a rectangle in the respective direction
@@ -308,7 +362,6 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
             result = checkUpCollison(entity, mapArray, randomMapSize,width, height, adjustment,
                                      entityDimension, entityFuturePosition, 0);
 
-
             break;
 
         //Down collision
@@ -320,7 +373,6 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
 
             result = checkDownCollison(entity, mapArray, randomMapSize,width, height, adjustment,
                                        entityDimension, entityFuturePosition, 0);
-
 
             break;
 
@@ -351,6 +403,97 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
     }
 
     return result;
+
+}
+
+/*
+  This function assigns every attribute of the given texture and it shows them in the window
+*/
+void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
+
+    SDL_Rect destination;
+
+    destination.x = x;
+    destination.y = y;
+    destination.w = w;
+    destination.h = h;
+
+    SDL_RenderCopy(game.renderer, texture, NULL, &destination);
+
+}
+
+/*
+  This function creates the array of enemies that will appear during the game
+*/
+void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize){
+
+    int random_x;
+    int random_y;
+
+    int collision_up;
+    int collision_down;
+    int collision_left;
+    int collision_right;
+
+    Entity *enemy;
+
+    //Set X and Y position for each enemy
+    for(int enemy_index = 0; enemy_index<6; enemy_index++) {
+
+        enemy = &enemiesArray[enemy_index];
+
+        // Generates correct random number
+        while(1) {
+
+            random_x = (rand() % 1015 ) + 90;
+            random_y = (rand() % 520 ) + 46;
+
+            enemiesArray[enemy_index].x = random_x;
+            enemiesArray[enemy_index].y = random_y;
+
+            collision_up = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                           ENTITY_SPEED, 0, 0);
+
+            collision_down = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                             ENTITY_SPEED, 0, 1);
+
+            collision_left = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                             ENTITY_SPEED, 0, 2);
+
+            collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                              ENTITY_SPEED, 0, 3);
+
+            if (collision_up  == 0 && collision_down == 0 && collision_left == 0 && collision_right == 0){
+
+                break;
+
+            }
+
+        }
+
+        enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
+        enemiesArray[enemy_index].w = ENTITY_WIDTH;
+        enemiesArray[enemy_index].h = ENTITY_HEIGHT;
+        enemiesArray[enemy_index].direction = 3; // Cambiarlo con la posicion inicial del jugador
+        enemiesArray[enemy_index].health = 1;
+
+    }
+
+}
+
+/*
+  This function show every enemy in the window
+*/
+void showEnemy(Entity *enemiesArray) {
+
+
+    //Set postion for each initial enemy
+    for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++){
+
+        setPosition(enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x, enemiesArray[enemy_index].y,
+        enemiesArray[enemy_index].w , enemiesArray[enemy_index].h);
+
+    }
 
 }
 
@@ -915,84 +1058,6 @@ void createMap1(SDL_Rect *mapArray) {
     }
 
 }
-
-
-void EnemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize){
-
-
-    int random_x;
-    int random_y;
-
-
-    int collision_up;
-    int collision_down;
-    int collision_left;
-    int collision_right;
-
-    Entity *enemy;
-
-
-    //Set postion for each initial enemy
-    for(int enemy_index = 0; enemy_index<6; enemy_index++){
-
-        enemy = &enemiesArray[enemy_index];
-
-
-        while(1){
-
-            random_x = (rand() % 1015 ) + 90;
-            random_y = (rand() % 520 ) + 46;
-
-
-            enemiesArray[enemy_index].x = random_x;
-            enemiesArray[enemy_index].y = random_y;
-
-
-            collision_up = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-            ENTITY_SPEED, 0, 0);
-
-            collision_down = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-            ENTITY_SPEED, 0, 1);
-
-            collision_left = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-            ENTITY_SPEED, 0, 2);
-
-            collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-            ENTITY_SPEED, 0, 3);
-
-
-            if (collision_up  == 0 && collision_down == 0 && collision_left == 0 && collision_right == 0){
-                    break;
-
-            }
-
-        }
-
-
-        enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
-        enemiesArray[enemy_index].w = ENTITY_WIDTH;
-        enemiesArray[enemy_index].h = ENTITY_HEIGHT;
-        enemiesArray[enemy_index].direction = 3; // Cambiarlo con la posicion inicial del jugador
-        enemiesArray[enemy_index].health = 1;
-
-    }
-
-}
-
-void showEnemy(Entity *enemiesArray){
-
-    //Set postion for each initial enemy
-    for(int enemy_index = 0; enemy_index<6; enemy_index++){
-
-        setPosition(enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x, enemiesArray[enemy_index].y
-        ,enemiesArray[enemy_index].w
-        , enemiesArray[enemy_index].h);
-
-    }
-
-}
-
-
 
 /*
   This function creates the necessary rectangles to build the second map
@@ -1823,24 +1888,7 @@ int main (int argc, char **argv) {
 
     SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
 
-    // Player creation
-    Entity player;
-    Entity *player_ptr = &player;
-	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
-	player.x = ENTITY_POSX;
-	player.y = ENTITY_POSY;
-	player.w = ENTITY_WIDTH;
-	player.h = ENTITY_HEIGHT;
-	player.direction = 3; // Cambiarlo con la posicion inicial del jugador
-	player.health = 1;
-
-	// Laser creation
-	LaserArray laserArray;
-	LaserArray *laserArray_ptr = &laserArray;
-	laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
-	laserArray.quantity = 0;
-
-	// Map creation
+    // Map creation
 	SDL_Rect *mapArray;
 
 	srand(time(0));
@@ -1873,13 +1921,27 @@ int main (int argc, char **argv) {
 
     }
 
-    //Enemy creation
-    //First six enemies on the screen
-    Entity *enemiesArray;
-    //Entity *enemiesArray_ptr = &enemiesArray;
-    enemiesArray = (Entity*)malloc(6 * sizeof(Entity));
+    // Player creation
+    Entity player;
+    Entity *player_ptr = &player;
+	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
+	player.x = ENTITY_POSX;
+	player.y = ENTITY_POSY;
+	player.w = ENTITY_WIDTH;
+	player.h = ENTITY_HEIGHT;
+	player.direction = 3; // Cambiarlo con la posicion inicial del jugador
+	player.health = 1;
 
-    EnemyGeneration(enemiesArray, mapArray, randomMapSize);
+	// Laser creation
+	LaserArray laserArray;
+	LaserArray *laserArray_ptr = &laserArray;
+	laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
+	laserArray.quantity = 0;
+
+    //Enemy creation
+    Entity *enemiesArray;
+    enemiesArray = (Entity*)malloc(6 * sizeof(Entity));
+    enemyGeneration(enemiesArray, mapArray, randomMapSize);
 
     int running = 1;
 
