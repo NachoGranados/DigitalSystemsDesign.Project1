@@ -32,9 +32,6 @@ const int LEFT = 2;
 const int RIGHT = 3;
 
 
-
-
-
 // Structures definition
 typedef struct {
 
@@ -286,6 +283,7 @@ int checkRightCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
 
 }
 
+
 /*
   This function checks if the given entity collides with a rectangle in the respective direction
 */
@@ -311,38 +309,6 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
                                      entityDimension, entityFuturePosition, 0);
 
 
-
-
-
-
-
-
-
-
-
-            /*
-            for(int i = 0; i < randomMapSize; i++) {
-
-                // Rectangles farthest up from the entity
-                if (mapArray[i].y + mapArray[i].h <= entityDimension &&
-
-                    // The entity is within the X range of the rectangle
-                    entity->x - adjustment >= mapArray[i].x &&
-                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
-
-                    // The entity oversteps the rectangle
-                    entityFuturePosition < mapArray[i].y + mapArray[i].h) {
-
-                    printf(" UP \nplayer.y = %d, rectangle.y = %d\n\n",
-                    entityFuturePosition, mapArray[i].y + mapArray[i].h);
-
-                    return 1;
-
-                }
-
-            }
-            */
-
             break;
 
         //Down collision
@@ -356,30 +322,6 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
                                        entityDimension, entityFuturePosition, 0);
 
 
-
-
-/*
-            for(int i = 0; i < randomMapSize; i++) {
-
-                // Rectangles farthest down from the entity
-                if (mapArray[i].y >= entityDimension &&
-
-                    // The entity is within the X range of the rectangle
-                    entity->x - adjustment >= mapArray[i].x &&
-                    entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
-
-                    // The entity oversteps the rectangle
-                    entityFuturePosition > mapArray[i].y) {
-
-                    printf("DOWN \nplayer.y = %d, rectangle.y = %d\n\n",
-                    entityFuturePosition, mapArray[i].y);
-
-                    return 1;
-
-                }
-
-            }*/
-
             break;
 
         //Left collision
@@ -392,33 +334,6 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
             result = checkLeftCollison(entity, mapArray, randomMapSize,width, height, adjustment,
                                        entityDimension, entityFuturePosition, 0);
 
-
-
-
-
-
-            /*
-            for(int i = 0; i < randomMapSize; i++) {
-
-                // Rectangles farthest left from the entity
-                if (mapArray[i].x <= entityDimension &&
-
-                    // The entity is within the Y range of the rectangle
-                    entity->y - adjustment >= mapArray[i].y &&
-                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
-
-                    // The entity oversteps the rectangle
-                    entityFuturePosition < mapArray[i].x + mapArray[i].w) {
-
-                    printf("LEFT \nplayer.x = %d, rectangle.x = %d\n\n",
-                    entityFuturePosition, mapArray[i].x + mapArray[i].w);
-
-                    return 1;
-
-                }
-
-            }*/
-
             break;
 
         //Right collision
@@ -430,32 +345,6 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
 
             result = checkRightCollison(entity, mapArray, randomMapSize,width, height, adjustment,
                                         entityDimension, entityFuturePosition, 0);
-
-
-
-
-
-/*
-            for(int i = 0; i < randomMapSize; i++) {
-
-                // Rectangles farthest right from the entity
-                if (mapArray[i].x >= entityDimension &&
-
-                    // The entity is within the Y range of the rectangle
-                    entity->y - adjustment >= mapArray[i].y &&
-                    entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
-
-                    // The entity oversteps the rectangle
-                    entityFuturePosition > mapArray[i].x) {
-
-                    printf("RIGHT \nplayer.x = %d, rectangle.x = %d\n\n",
-                    entityFuturePosition, mapArray[i].x);
-
-                    return 1;
-
-                }
-
-            }*/
 
             break;
 
@@ -1026,6 +915,84 @@ void createMap1(SDL_Rect *mapArray) {
     }
 
 }
+
+
+void EnemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize){
+
+
+    int random_x;
+    int random_y;
+
+
+    int collision_up;
+    int collision_down;
+    int collision_left;
+    int collision_right;
+
+    Entity *enemy;
+
+
+    //Set postion for each initial enemy
+    for(int enemy_index = 0; enemy_index<6; enemy_index++){
+
+        enemy = &enemiesArray[enemy_index];
+
+
+        while(1){
+
+            random_x = (rand() % 1015 ) + 90;
+            random_y = (rand() % 520 ) + 46;
+
+
+            enemiesArray[enemy_index].x = random_x;
+            enemiesArray[enemy_index].y = random_y;
+
+
+            collision_up = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            ENTITY_SPEED, 0, 0);
+
+            collision_down = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            ENTITY_SPEED, 0, 1);
+
+            collision_left = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            ENTITY_SPEED, 0, 2);
+
+            collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            ENTITY_SPEED, 0, 3);
+
+
+            if (collision_up  == 0 && collision_down == 0 && collision_left == 0 && collision_right == 0){
+                    break;
+
+            }
+
+        }
+
+
+        enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
+        enemiesArray[enemy_index].w = ENTITY_WIDTH;
+        enemiesArray[enemy_index].h = ENTITY_HEIGHT;
+        enemiesArray[enemy_index].direction = 3; // Cambiarlo con la posicion inicial del jugador
+        enemiesArray[enemy_index].health = 1;
+
+    }
+
+}
+
+void showEnemy(Entity *enemiesArray){
+
+    //Set postion for each initial enemy
+    for(int enemy_index = 0; enemy_index<6; enemy_index++){
+
+        setPosition(enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x, enemiesArray[enemy_index].y
+        ,enemiesArray[enemy_index].w
+        , enemiesArray[enemy_index].h);
+
+    }
+
+}
+
+
 
 /*
   This function creates the necessary rectangles to build the second map
@@ -1906,6 +1873,14 @@ int main (int argc, char **argv) {
 
     }
 
+    //Enemy creation
+    //First six enemies on the screen
+    Entity *enemiesArray;
+    //Entity *enemiesArray_ptr = &enemiesArray;
+    enemiesArray = (Entity*)malloc(6 * sizeof(Entity));
+
+    EnemyGeneration(enemiesArray, mapArray, randomMapSize);
+
     int running = 1;
 
     // Infinite loop
@@ -1920,6 +1895,8 @@ int main (int argc, char **argv) {
         setPosition(wallpaper, 0, 605, 400, 300);
 
         setPosition(player.texture, player.x, player.y, player.w, player.h);
+
+        showEnemy(enemiesArray);
 
         showMap(mapArray, randomMapSize);
 
@@ -1938,6 +1915,7 @@ int main (int argc, char **argv) {
 
 	free(laserArray.array);
 	free(mapArray);
+	free(enemiesArray);
 
 	IMG_Quit();
 	SDL_DestroyRenderer(game.renderer);
