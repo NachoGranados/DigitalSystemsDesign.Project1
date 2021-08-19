@@ -580,7 +580,11 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
     Entity *enemy;
 
     //Set X and Y position for each enemy
+<<<<<<< Updated upstream
     for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++) {
+=======
+    for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
+>>>>>>> Stashed changes
 
         enemy = &enemiesArray[enemy_index];
 
@@ -620,6 +624,35 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
         enemiesArray[enemy_index].health = 1;
 
     }
+
+    //EnemiesMovments(enemiesArray);
+}
+
+
+void EnemiesMovements(Entity *enemiesArray){
+
+    printf("%s \n", "ENTRA FUNCIÓN");
+
+    //To set the direction
+    int direction_set;
+
+    for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
+
+        //direction_set = (rand() %  3 );
+
+        direction_set = (rand() % 3 ) + 0;
+
+        printf("POSITION %d", enemiesArray[enemy_index].x);
+        printf("DIRECTION %d", direction_set);
+
+        enemiesArray[enemy_index].x += ENTITY_SPEED;
+
+        //setPosition(enemiesArray[enemy_index].texture, enemiesArray[enemy_index].x,
+        //enemiesArray[enemy_index].y,ENTITY_WIDTH, ENTITY_HEIGHT);
+
+    }
+
+        //printf("LENGHT %d", sizeof(enemiesArray));
 
 }
 
@@ -692,6 +725,23 @@ void enemyInitialAdjustment(Entity *enemiesArray, SDL_Rect *mapArray, int random
            }
 
         }
+
+    }
+
+}
+
+void EnemiesMovements(Entity *enemiesArray){
+
+    //To set the direction
+    int direction_set;
+
+    for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
+
+        //direction_set = (rand() %  3 );
+
+        direction_set = (rand() % 3 ) + 0;
+
+        enemiesArray[enemy_index].x += ENTITY_SPEED;
 
     }
 
@@ -2159,6 +2209,7 @@ int main (int argc, char **argv) {
     enemyGeneration(enemiesArray, mapArray, randomMapSize);
     enemyInitialAdjustment(enemiesArray, mapArray, randomMapSize);
 
+
     int running = 1;
 
     // Infinite loop
@@ -2173,6 +2224,10 @@ int main (int argc, char **argv) {
         setPosition(wallpaper, 0, 605, 400, 300);
 
         setPosition(player.texture, player.x, player.y, player.w, player.h);
+
+        EnemiesMovements(enemiesArray);
+
+        EnemiesMovements(enemiesArray);
 
         showEnemy(enemiesArray);
 
