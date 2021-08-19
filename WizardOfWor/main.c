@@ -17,14 +17,20 @@ const int LASER_ADJUSTMENT = 13;
 const int LASER_MAX_QUANTITY = 20;
 
 const int ENTITY_POSX = 94;
-const int ENTITY_POSY = 48;
+const int ENTITY_POSY = 54;
 const int ENTITY_WIDTH = 65;
 const int ENTITY_HEIGHT = 65;
 const int ENTITY_SPEED = 13;
 const int ENTITY_MAX_QUANTITY = 6;
+const int ENTITY_MAX_INITIAL_STEPS = 15;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
+const int MAP_MAX_X_MARGIN = 1000;
+const int MAP_MAX_Y_MARGIN = 490;
+const int MAP_MIN_X_MARGIN = 90;
+const int MAP_MIN_Y_MARGIN = 50;
+
 
 const int UP = 0;
 const int DOWN = 1;
@@ -166,7 +172,43 @@ int checkUpCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
         entity->y - adjustment <= mapArray[i].y + mapArray[i].h + ENTITY_WIDTH &&
 
         // The entity oversteps the rectangle
-        entityFuturePosition > mapArray[i].y) {
+        entityFuturePosition < mapArray[i].y + mapArray[i].h) {
+
+        return 1;
+
+    // Head collision
+    // Rectangles farthest up from the entity
+    } else if (mapArray[i].y + mapArray[i].h <= entityDimension &&
+
+        // The head of the entity is within the X range of the rectangle
+        entity->x - adjustment >= mapArray[i].x &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment + width >= mapArray[i].x + mapArray[i].w &&
+
+        // The entity is next to the rectangle
+        entity->y - adjustment >= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h + ENTITY_WIDTH &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition < mapArray[i].y + mapArray[i].h) {
+
+        return 1;
+
+    // Feet collision
+    // Rectangles farthest up from the entity
+    } else if (mapArray[i].y + mapArray[i].h <= entityDimension &&
+
+       // The feet of the entity is within the Y=X range of the rectangle
+        entity->x - adjustment <= mapArray[i].x &&
+        entity->x - adjustment + width >= mapArray[i].x &&
+        entity->x - adjustment + width <= mapArray[i].x  + mapArray[i].w &&
+
+        // The entity is next to the rectangle
+        entity->y - adjustment >= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h + ENTITY_WIDTH &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition < mapArray[i].y + mapArray[i].h) {
 
         return 1;
 
@@ -223,6 +265,34 @@ int checkDownCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
 
         return 1;
 
+    // Head collision
+    // Rectangles farthest down from the entity
+    } else if (mapArray[i].y >= entityDimension &&
+
+        // The head of the entity is within the X range of the rectangle
+        entity->x - adjustment >= mapArray[i].x &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment + width >= mapArray[i].x + mapArray[i].w &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].y) {
+
+        return 1;
+
+    // Feet collision
+    // Rectangles farthest down from the entity
+    } else if (mapArray[i].y >= entityDimension &&
+
+       // The feet of the entity is within the Y=X range of the rectangle
+        entity->x - adjustment <= mapArray[i].x &&
+        entity->x - adjustment + width >= mapArray[i].x &&
+        entity->x - adjustment + width <= mapArray[i].x  + mapArray[i].w &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].y) {
+
+        return 1;
+
     } else {
 
         return checkDownCollison(entity, mapArray, randomMapSize, width, height, adjustment,
@@ -272,7 +342,43 @@ int checkLeftCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
         entity->x - adjustment <= mapArray[i].x + mapArray[i].w + ENTITY_WIDTH &&
 
         // The entity oversteps the rectangle
-        entityFuturePosition > mapArray[i].x) {
+        entityFuturePosition < mapArray[i].x + mapArray[i].w) {
+
+        return 1;
+
+    // Head collision
+    // Rectangles farthest left from the entity
+    } else if (mapArray[i].x <= entityDimension &&
+
+        // The head of the entity is within the Y range of the rectangle
+        entity->y - adjustment >= mapArray[i].y &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment + height >= mapArray[i].y + mapArray[i].h &&
+
+        // The entity is next to the rectangle
+        entity->x - adjustment >= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w + ENTITY_WIDTH &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition < mapArray[i].x + mapArray[i].w) {
+
+        return 1;
+
+    // Feet collision
+    // Rectangles farthest left from the entity
+    } else if (mapArray[i].x <= entityDimension &&
+
+       // The feet of the entity is within the Y range of the rectangle
+        entity->y - adjustment <= mapArray[i].y &&
+        entity->y - adjustment + height >= mapArray[i].y &&
+        entity->y - adjustment + height <= mapArray[i].y  + mapArray[i].h &&
+
+        // The entity is next to the rectangle
+        entity->x - adjustment >= mapArray[i].x + mapArray[i].w &&
+        entity->x - adjustment <= mapArray[i].x + mapArray[i].w + ENTITY_WIDTH &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition < mapArray[i].x + mapArray[i].w) {
 
         return 1;
 
@@ -319,6 +425,42 @@ int checkRightCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize,
         // The rectangle is within the Y range of the entity
         mapArray[i].y >= entity->y - adjustment &&
         mapArray[i].y + mapArray[i].h <= entity->y - adjustment + height &&
+
+        // The entity is next to the rectangle
+        entity->x - adjustment + width >= mapArray[i].x - ENTITY_WIDTH &&
+        entity->x - adjustment + width <= mapArray[i].x &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].x) {
+
+        return 1;
+
+    // Head collision
+    // Rectangles farthest right from the entity
+    } else if(mapArray[i].x >= entityDimension &&
+
+        // The head of the entity is within the Y range of the rectangle
+        entity->y - adjustment >= mapArray[i].y &&
+        entity->y - adjustment <= mapArray[i].y + mapArray[i].h &&
+        entity->y - adjustment + height >= mapArray[i].y + mapArray[i].h &&
+
+        // The entity is next to the rectangle
+        entity->x - adjustment + width >= mapArray[i].x - ENTITY_WIDTH &&
+        entity->x - adjustment + width <= mapArray[i].x &&
+
+        // The entity oversteps the rectangle
+        entityFuturePosition > mapArray[i].x) {
+
+        return 1;
+
+    // Feet collision
+    // Rectangles farthest right from the entity
+    } else if (mapArray[i].x >= entityDimension &&
+
+       // The feet of the entity is within the Y range of the rectangle
+        entity->y - adjustment <= mapArray[i].y &&
+        entity->y - adjustment + height >= mapArray[i].y &&
+        entity->y - adjustment + height <= mapArray[i].y  + mapArray[i].h &&
 
         // The entity is next to the rectangle
         entity->x - adjustment + width >= mapArray[i].x - ENTITY_WIDTH &&
@@ -425,7 +567,7 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
 /*
   This function creates the array of enemies that will appear during the game
 */
-void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize){
+void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize) {
 
     int random_x;
     int random_y;
@@ -438,15 +580,15 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
     Entity *enemy;
 
     //Set X and Y position for each enemy
-    for(int enemy_index = 0; enemy_index<6; enemy_index++) {
+    for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++) {
 
         enemy = &enemiesArray[enemy_index];
 
         // Generates correct random number
         while(1) {
 
-            random_x = (rand() % 1015 ) + 90;
-            random_y = (rand() % 520 ) + 46;
+            random_x = (rand() % MAP_MAX_X_MARGIN) + MAP_MIN_X_MARGIN;
+            random_y = (rand() % MAP_MAX_Y_MARGIN) + MAP_MIN_Y_MARGIN;
 
             enemiesArray[enemy_index].x = random_x;
             enemiesArray[enemy_index].y = random_y;
@@ -474,8 +616,82 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
         enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
         enemiesArray[enemy_index].w = ENTITY_WIDTH;
         enemiesArray[enemy_index].h = ENTITY_HEIGHT;
-        enemiesArray[enemy_index].direction = 3; // Cambiarlo con la posicion inicial del jugador
+        enemiesArray[enemy_index].direction = 3;
         enemiesArray[enemy_index].health = 1;
+
+    }
+
+}
+
+/*
+  This function set a correct initial position for every enemy in the window
+*/
+void enemyInitialAdjustment(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize) {
+
+    int collision;
+
+    Entity *enemy;
+
+    for(int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        enemy = &enemiesArray[i];
+
+        // Up movement
+        for (int j = 0; j < ENTITY_MAX_INITIAL_STEPS; j++) {
+
+           collision = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                                     ENTITY_SPEED, 0, 0);
+
+           if (collision != 1) {
+
+               enemy->y -= ENTITY_SPEED;
+
+           }
+
+        }
+
+        // Down movement
+        for (int j = 0; j < ENTITY_MAX_INITIAL_STEPS; j++) {
+
+           collision = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                                     ENTITY_SPEED, 0, 1);
+
+           if (collision != 1) {
+
+               enemy->y += ENTITY_SPEED;
+
+           }
+
+        }
+
+
+        // Left movement
+        for (int j = 0; j < ENTITY_MAX_INITIAL_STEPS; j++) {
+
+           collision = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                                     ENTITY_SPEED, 0, 2);
+
+           if (collision != 1) {
+
+               enemy->x -= ENTITY_SPEED;
+
+           }
+
+        }
+
+        // Right movement
+        for (int j = 0; j < ENTITY_MAX_INITIAL_STEPS; j++) {
+
+           collision = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                                     ENTITY_SPEED, 0, 3);
+
+           if (collision != 1) {
+
+               enemy->x += ENTITY_SPEED;
+
+           }
+
+        }
 
     }
 
@@ -485,7 +701,6 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
   This function show every enemy in the window
 */
 void showEnemy(Entity *enemiesArray) {
-
 
     //Set postion for each initial enemy
     for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++){
@@ -528,7 +743,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                         collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
                                                   ENTITY_HEIGHT, ENTITY_SPEED, 0, 0);
 
-                        if (collision != 1){
+                        if (collision != 1) {
 
                             player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
                             player->y -= ENTITY_SPEED;
@@ -560,7 +775,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                         collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
                                                   ENTITY_HEIGHT, ENTITY_SPEED, 0, 2);
 
-                        if (collision != 1){
+                        if (collision != 1) {
 
                             player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
                             player->x -= ENTITY_SPEED;
@@ -576,7 +791,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                        collision = checkCollison(player, mapArray, randomMapSize, ENTITY_WIDTH,
                                                  ENTITY_HEIGHT, ENTITY_SPEED, 0, 3);
 
-                        if (collision != 1){
+                        if (collision != 1) {
 
                             player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
                             player->x += ENTITY_SPEED;
@@ -1942,6 +2157,7 @@ int main (int argc, char **argv) {
     Entity *enemiesArray;
     enemiesArray = (Entity*)malloc(6 * sizeof(Entity));
     enemyGeneration(enemiesArray, mapArray, randomMapSize);
+    enemyInitialAdjustment(enemiesArray, mapArray, randomMapSize);
 
     int running = 1;
 
