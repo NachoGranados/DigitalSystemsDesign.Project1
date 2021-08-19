@@ -26,16 +26,23 @@ const int ENTITY_MAX_INITIAL_STEPS = 15;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
-const int MAP_MAX_X_MARGIN = 1000;
-const int MAP_MAX_Y_MARGIN = 490;
-const int MAP_MIN_X_MARGIN = 90;
-const int MAP_MIN_Y_MARGIN = 50;
 
+const int MAP_MIN_X_MARGIN = 90;
+const int MAP_MAX_X_MARGIN = 850;
+
+const int MAP_MIN_Y_MARGIN = 50;
+const int MAP_MAX_Y_MARGIN = 520;
 
 const int UP = 0;
 const int DOWN = 1;
 const int LEFT = 2;
 const int RIGHT = 3;
+
+//const int BURWOR = 0;
+//const int GARWOR = 1;
+//const int THORWOR = 2;
+//const int WIZARD = 3;
+//const int WORLUK = 4;
 
 // Structures definition
 typedef struct {
@@ -54,10 +61,7 @@ typedef struct {
     int w;
     int h;
 
-    int direction; // up = 0
-                   // down = 1
-                   // left = 2
-                   // right = 3
+    int direction;
 
     int health;
 
@@ -75,7 +79,7 @@ typedef struct {
 
 // Functions definition
 /*
-  This function creates and sets specific chracteristics to the window
+  This function creates and sets specific characteristics to the window
 */
 void createWindow() {
 
@@ -565,26 +569,73 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
 }
 
 /*
+  This function checks if an enemy has a similar position relative to another enemy
+*/
+int overstepEnemy (Entity *enemiesArray, int i) {
+
+    int overstep = 0;
+
+    for(int j = 0; j < ENTITY_MAX_QUANTITY; j++) {
+
+        // Farthest up Y collision
+        if (i != j && enemiesArray[i].y <= enemiesArray[j].y &&
+            enemiesArray[i].y + ENTITY_HEIGHT >= enemiesArray[j].y) {
+
+                overstep = 1;
+
+        // Farthest down Y collision
+        } else if (i != j && enemiesArray[i].y <= enemiesArray[j].y + ENTITY_HEIGHT &&
+            enemiesArray[i].y + ENTITY_HEIGHT >= enemiesArray[j].y + ENTITY_HEIGHT) {
+
+                overstep = 1;
+
+        // Farthest left X collision
+        } else if (i != j && enemiesArray[i].x <= enemiesArray[j].x  &&
+            enemiesArray[i].x + ENTITY_WIDTH >= enemiesArray[j].x) {
+
+            overstep = 1;
+
+        // Farthest right X collision
+        } else if (i != j && enemiesArray[i].x <= enemiesArray[j].x + ENTITY_HEIGHT &&
+            enemiesArray[i].x + ENTITY_HEIGHT >= enemiesArray[j].x + ENTITY_WIDTH) {
+
+            overstep = 1;
+
+        }
+
+    }
+
+    return overstep;
+
+}
+
+/*
   This function creates the array of enemies that will appear during the game
 */
 void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize) {
 
     int random_x;
     int random_y;
+    int random_texture;
 
     int collision_up;
     int collision_down;
     int collision_left;
     int collision_right;
 
+    int overstep;
+
     Entity *enemy;
 
+    for(int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        enemiesArray[i].x = 0;
+        enemiesArray[i].y = 0;
+
+    }
+
     //Set X and Y position for each enemy
-<<<<<<< Updated upstream
     for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++) {
-=======
-    for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
->>>>>>> Stashed changes
 
         enemy = &enemiesArray[enemy_index];
 
@@ -609,7 +660,10 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
             collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
                               ENTITY_SPEED, 0, 3);
 
-            if (collision_up  == 0 && collision_down == 0 && collision_left == 0 && collision_right == 0){
+            overstep = overstepEnemy(enemiesArray, enemy_index);
+
+            if (collision_up  == 0 && collision_down == 0 && collision_left == 0 && collision_right == 0 &&
+                overstep == 0) {
 
                 break;
 
@@ -617,7 +671,42 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
 
         }
 
-        enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
+        random_texture = rand() % 4;
+
+        switch (random_texture) {
+
+        case 0:
+
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
+
+            break;
+
+        case 1:
+
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Garwor/Right.png");
+
+            break;
+
+        case 2:
+
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Thorwor/Right.png");
+
+            break;
+
+        case 3:
+
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Wizard/Right.png");
+
+            break;
+
+        case 4:
+
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Worluk/Right.png");
+
+            break;
+
+        }
+
         enemiesArray[enemy_index].w = ENTITY_WIDTH;
         enemiesArray[enemy_index].h = ENTITY_HEIGHT;
         enemiesArray[enemy_index].direction = 3;
@@ -625,11 +714,12 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
 
     }
 
-    //EnemiesMovments(enemiesArray);
 }
 
-
-void EnemiesMovements(Entity *enemiesArray){
+/*
+  This function moves every single enemy through the window
+*/
+void enemiesMovements(Entity *enemiesArray) {
 
     printf("%s \n", "ENTRA FUNCIÓN");
 
@@ -638,21 +728,14 @@ void EnemiesMovements(Entity *enemiesArray){
 
     for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
 
-        //direction_set = (rand() %  3 );
-
-        direction_set = (rand() % 3 ) + 0;
+        direction_set = rand() % 3;
 
         printf("POSITION %d", enemiesArray[enemy_index].x);
         printf("DIRECTION %d", direction_set);
 
         enemiesArray[enemy_index].x += ENTITY_SPEED;
 
-        //setPosition(enemiesArray[enemy_index].texture, enemiesArray[enemy_index].x,
-        //enemiesArray[enemy_index].y,ENTITY_WIDTH, ENTITY_HEIGHT);
-
     }
-
-        //printf("LENGHT %d", sizeof(enemiesArray));
 
 }
 
@@ -730,33 +813,16 @@ void enemyInitialAdjustment(Entity *enemiesArray, SDL_Rect *mapArray, int random
 
 }
 
-void EnemiesMovements(Entity *enemiesArray){
-
-    //To set the direction
-    int direction_set;
-
-    for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
-
-        //direction_set = (rand() %  3 );
-
-        direction_set = (rand() % 3 ) + 0;
-
-        enemiesArray[enemy_index].x += ENTITY_SPEED;
-
-    }
-
-}
-
 /*
   This function show every enemy in the window
 */
 void showEnemy(Entity *enemiesArray) {
 
-    //Set postion for each initial enemy
-    for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++){
+    //Set position for each initial enemy
+    for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++) {
 
-        setPosition(enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x, enemiesArray[enemy_index].y,
-        enemiesArray[enemy_index].w , enemiesArray[enemy_index].h);
+        setPosition(enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x,
+                    enemiesArray[enemy_index].y, ENTITY_WIDTH, ENTITY_HEIGHT);
 
     }
 
@@ -2225,9 +2291,7 @@ int main (int argc, char **argv) {
 
         setPosition(player.texture, player.x, player.y, player.w, player.h);
 
-        EnemiesMovements(enemiesArray);
-
-        EnemiesMovements(enemiesArray);
+        enemiesMovements(enemiesArray);
 
         showEnemy(enemiesArray);
 
