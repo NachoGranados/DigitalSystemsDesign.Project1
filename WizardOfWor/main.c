@@ -5,6 +5,7 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 // Constants
 const int TITLE_SCREEN_WIDTH = 950;
@@ -2261,6 +2262,14 @@ int main (int argc, char **argv) {
 
                             SDL_Texture *gameWallpaper = IMG_LoadTexture(gameWindow.renderer,"Images/Wallpaper.png");
 
+                            // Score label creation
+                            TTF_Init();
+                            TTF_Font *scoreFont = TTF_OpenFont("arial.ttf", 15);
+                            SDL_Color scoreColor = {255, 255, 0, 0};
+                            SDL_Surface *scoreSurface = TTF_RenderText_Solid(scoreFont, "100", scoreColor);
+                            SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(gameWindow.renderer, scoreSurface);
+                            SDL_FreeSurface(scoreSurface);
+
                             // Map creation
                             SDL_Rect *mapArray;
 
@@ -2330,6 +2339,8 @@ int main (int argc, char **argv) {
 
                                 setPosition(gameWindow_ptr, gameWallpaper, 0, 605, 400, 300);
 
+                                setPosition(gameWindow_ptr, scoreTexture, 975, 787, 150, 75);
+
                                 setPosition(gameWindow_ptr, player.texture, player.x, player.y, player.w, player.h);
 
                                 enemiesMovements(enemiesArray);
@@ -2366,6 +2377,8 @@ int main (int argc, char **argv) {
     }
 
 	IMG_Quit();
+
+	TTF_Quit();
 
 	SDL_DestroyRenderer(gameWindow.renderer);
 	SDL_DestroyWindow(gameWindow.window);

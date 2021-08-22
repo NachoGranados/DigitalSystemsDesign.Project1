@@ -18,6 +18,7 @@
 				<Linker>
 					<Add library="SDL2" />
 					<Add library="SDL2_image" />
+					<Add library="SDL2_ttf" />
 				</Linker>
 			</Target>
 			<Target title="Release">
