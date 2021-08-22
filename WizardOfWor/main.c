@@ -7,6 +7,12 @@
 #include <SDL2/SDL_image.h>
 
 // Constants
+const int TITLE_SCREEN_WIDTH = 950;
+const int TITLE_SCREEN_HEIGHT = 1226;
+
+const int PRESS_ENTER_WIDTH = 512;
+const int PRESS_ENTER_HEIGHT = 121;
+
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 900;
 
@@ -52,8 +58,6 @@ typedef struct {
 
 } Game;
 
-static Game game;
-
 typedef struct {
 
     int x;
@@ -81,16 +85,16 @@ typedef struct {
 /*
   This function creates and sets specific characteristics to the window
 */
-void createWindow() {
+void createWindow(Game *gameWindow) {
 
     SDL_Init(SDL_INIT_VIDEO);
 
-	game.window = SDL_CreateWindow("Wizard of Wor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                    SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+	gameWindow->window = SDL_CreateWindow("Wizard of Wor", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                      SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-	game.renderer = SDL_CreateRenderer(game.window, -1, SDL_RENDERER_ACCELERATED);
+	gameWindow->renderer = SDL_CreateRenderer(gameWindow->window, -1, SDL_RENDERER_ACCELERATED);
 
 }
 
@@ -98,7 +102,7 @@ void createWindow() {
   This function creates and stores the laser's structures in the give array and it assigns them
   the attributes they need
   */
-void createLaser(Entity *player, LaserArray *laserArray) {
+void createLaser(Game *gameWindow, Entity *player, LaserArray *laserArray) {
 
     if (laserArray->quantity < LASER_MAX_QUANTITY) {
 
@@ -113,12 +117,12 @@ void createLaser(Entity *player, LaserArray *laserArray) {
         // Vertical texture
         if (player->direction < 2) {
 
-            laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser/Vertical.png");
+            laser.texture = IMG_LoadTexture(gameWindow->renderer,"Images/Laser/Vertical.png");
 
         // Horizontal texture
         } else {
 
-            laser.texture = IMG_LoadTexture(game.renderer,"Images/Laser/Horizontal.png");
+            laser.texture = IMG_LoadTexture(gameWindow->renderer,"Images/Laser/Horizontal.png");
 
         }
 
@@ -555,7 +559,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
 /*
   This function assigns every attribute of the given texture and it shows them in the window
 */
-void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
+void setPosition(Game *gameWindow, SDL_Texture *texture, int x, int y, int w, int h) {
 
     SDL_Rect destination;
 
@@ -564,7 +568,7 @@ void setPosition(SDL_Texture *texture, int x, int y, int w, int h) {
     destination.w = w;
     destination.h = h;
 
-    SDL_RenderCopy(game.renderer, texture, NULL, &destination);
+    SDL_RenderCopy(gameWindow->renderer, texture, NULL, &destination);
 
 }
 
@@ -612,7 +616,7 @@ int overstepEnemy (Entity *enemiesArray, int i) {
 /*
   This function creates the array of enemies that will appear during the game
 */
-void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize) {
+void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize) {
 
     int random_x;
     int random_y;
@@ -677,31 +681,31 @@ void enemyGeneration(Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize
 
         case 0:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Burwor/Right.png");
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Right.png");
 
             break;
 
         case 1:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Garwor/Right.png");
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Right.png");
 
             break;
 
         case 2:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Thorwor/Right.png");
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Right.png");
 
             break;
 
         case 3:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Wizard/Right.png");
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Right.png");
 
             break;
 
         case 4:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(game.renderer,"Images/Worluk/Right.png");
+            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Right.png");
 
             break;
 
@@ -816,12 +820,12 @@ void enemyInitialAdjustment(Entity *enemiesArray, SDL_Rect *mapArray, int random
 /*
   This function show every enemy in the window
 */
-void showEnemy(Entity *enemiesArray) {
+void showEnemy(Game *gameWindow, Entity *enemiesArray) {
 
     //Set position for each initial enemy
     for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++) {
 
-        setPosition(enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x,
+        setPosition(gameWindow, enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x,
                     enemiesArray[enemy_index].y, ENTITY_WIDTH, ENTITY_HEIGHT);
 
     }
@@ -829,9 +833,9 @@ void showEnemy(Entity *enemiesArray) {
 }
 
 /*
-  This function execute the given by the computer mouse or the keyboard respectively
+  This function execute the given instruction by the computer mouse or the keyboard respectively
 */
-int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
+int inputAction(Game *gameWindow, Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
 
     SDL_Event event;
 
@@ -861,7 +865,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
 
                         if (collision != 1) {
 
-                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Up.png");
+                            player->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worrior/Up.png");
                             player->y -= ENTITY_SPEED;
                             player->direction = 0;
 
@@ -877,7 +881,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
 
                         if (collision != 1) {
 
-                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Down.png");
+                            player->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worrior/Down.png");
                             player->y += ENTITY_SPEED;
                             player->direction = 1;
 
@@ -893,7 +897,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
 
                         if (collision != 1) {
 
-                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Left.png");
+                            player->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worrior/Left.png");
                             player->x -= ENTITY_SPEED;
                             player->direction = 2;
 
@@ -909,7 +913,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
 
                         if (collision != 1) {
 
-                            player->texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
+                            player->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worrior/Right.png");
                             player->x += ENTITY_SPEED;
                             player->direction = 3;
 
@@ -920,7 +924,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
                     // Player fire
                     case SDLK_SPACE:
 
-                        createLaser(player, laserArray);
+                        createLaser(gameWindow, player, laserArray);
 
                         break;
 
@@ -937,7 +941,7 @@ int inputAction(Entity *player, LaserArray *laserArray, SDL_Rect *mapArray, int 
 /*
   This function assigns the correct position of every laser in the given array based on its positions
 */
-void laserAction(LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
+void laserAction(Game *gameWindow, LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) {
 
     int collision;
 
@@ -986,7 +990,7 @@ void laserAction(LaserArray *laserArray, SDL_Rect *mapArray, int randomMapSize) 
 
             if (laser->health == 1) {
 
-                setPosition(laser->texture, laser->x, laser->y, laser->w, laser->h);
+                setPosition(gameWindow, laser->texture, laser->x, laser->y, laser->w, laser->h);
 
             }
 
@@ -2196,11 +2200,11 @@ void createMap3(SDL_Rect *mapArray) {
 /*
   This function shows every rectangle given by the array in the window
 */
-void showMap(SDL_Rect *mapArray, int arraySize) {
+void showMap(Game *gameWindow, SDL_Rect *mapArray, int arraySize) {
 
     for (int i = 0; i < arraySize; i++) {
 
-        SDL_RenderFillRect(game.renderer, &mapArray[i]);
+        SDL_RenderFillRect(gameWindow->renderer, &mapArray[i]);
 
     }
 
@@ -2211,112 +2215,161 @@ void showMap(SDL_Rect *mapArray, int arraySize) {
 */
 int main (int argc, char **argv) {
 
-    createWindow();
+    // Load PNG images in the game
+    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+    Game gameWindow;
+    Game *gameWindow_ptr = &gameWindow;
 
-    SDL_Texture *background = IMG_LoadTexture(game.renderer,"Images/Background.png");
+    createWindow(gameWindow_ptr);
 
-    SDL_Texture *wallpaper = IMG_LoadTexture(game.renderer,"Images/Wallpaper.png");
+    SDL_Texture *initBackground = IMG_LoadTexture(gameWindow.renderer,"Images/Title.png");
 
-    // Map creation
-	SDL_Rect *mapArray;
+    SDL_Texture *pressEnter = IMG_LoadTexture(gameWindow.renderer,"Images/PressEnter.png");
 
-	srand(time(0));
+    int initRunning = 1;
 
-    int randomMap = (rand() % 3) + 1;
-    //int randomMap = 3;
+    // Infinite loop
+    while(initRunning) {
 
-    int randomMapSize;
+        SDL_RenderClear(gameWindow.renderer);
 
-    // Load first map
-    if (randomMap == 1) {
+        SDL_SetRenderDrawColor(gameWindow.renderer, 0, 0, 0, 0);
 
-        mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
-        randomMapSize = MAP_1_3_SIZE;
-        createMap1(mapArray);
+        setPosition(gameWindow_ptr, initBackground, 125, -40, TITLE_SCREEN_WIDTH, TITLE_SCREEN_WIDTH);
 
-    // Load second map
-    } else if (randomMap == 2) {
+        setPosition(gameWindow_ptr, pressEnter, 530, 779, PRESS_ENTER_WIDTH, PRESS_ENTER_HEIGHT);
 
-        mapArray = (SDL_Rect*)malloc(MAP_2_SIZE * sizeof(SDL_Rect));
-        randomMapSize = MAP_2_SIZE;
-        createMap2(mapArray);
+        SDL_Event event;
 
-    // Load third map
-    } else {
+        while(SDL_PollEvent(&event)) {
 
-        mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
-        randomMapSize = MAP_1_3_SIZE;
-        createMap3(mapArray);
+            switch(event.type) {
+
+                case SDL_QUIT:
+
+                    initRunning = 0;
+
+                    break;
+
+                case SDL_KEYDOWN:
+
+                    // Start game
+                    if (event.key.keysym.sym == SDLK_SPACE) {
+
+                            SDL_Texture *gameBackground = IMG_LoadTexture(gameWindow.renderer,"Images/Background.png");
+
+                            SDL_Texture *gameWallpaper = IMG_LoadTexture(gameWindow.renderer,"Images/Wallpaper.png");
+
+                            // Map creation
+                            SDL_Rect *mapArray;
+
+                            srand(time(0));
+
+                            int randomMap = (rand() % 3) + 1;
+                            //int randomMap = 3;
+
+                            int randomMapSize;
+
+                            // Load first map
+                            if (randomMap == 1) {
+
+                                mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
+                                randomMapSize = MAP_1_3_SIZE;
+                                createMap1(mapArray);
+
+                            // Load second map
+                            } else if (randomMap == 2) {
+
+                                mapArray = (SDL_Rect*)malloc(MAP_2_SIZE * sizeof(SDL_Rect));
+                                randomMapSize = MAP_2_SIZE;
+                                createMap2(mapArray);
+
+                            // Load third map
+                            } else {
+
+                                mapArray = (SDL_Rect*)malloc(MAP_1_3_SIZE * sizeof(SDL_Rect));
+                                randomMapSize = MAP_1_3_SIZE;
+                                createMap3(mapArray);
+
+                            }
+
+                            // Player creation
+                            Entity player;
+                            Entity *player_ptr = &player;
+                            player.texture = IMG_LoadTexture(gameWindow.renderer,"Images/Worrior/Right.png");
+                            player.x = ENTITY_POSX;
+                            player.y = ENTITY_POSY;
+                            player.w = ENTITY_WIDTH;
+                            player.h = ENTITY_HEIGHT;
+                            player.direction = 3; // Cambiarlo con la posicion inicial del jugador
+                            player.health = 1;
+
+                            // Laser creation
+                            LaserArray laserArray;
+                            LaserArray *laserArray_ptr = &laserArray;
+                            laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
+                            laserArray.quantity = 0;
+
+                            //Enemy creation
+                            Entity *enemiesArray;
+                            enemiesArray = (Entity*)malloc(6 * sizeof(Entity));
+                            enemyGeneration(gameWindow_ptr, enemiesArray, mapArray, randomMapSize);
+                            enemyInitialAdjustment(enemiesArray, mapArray, randomMapSize);
+
+                            int gameRunning = 1;
+
+                            // Infinite loop
+                            while(gameRunning) {
+
+                                SDL_SetRenderDrawColor(gameWindow.renderer, 0, 102, 204, 0);
+
+                                SDL_RenderClear(gameWindow.renderer);
+
+                                setPosition(gameWindow_ptr, gameBackground, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+                                setPosition(gameWindow_ptr, gameWallpaper, 0, 605, 400, 300);
+
+                                setPosition(gameWindow_ptr, player.texture, player.x, player.y, player.w, player.h);
+
+                                enemiesMovements(enemiesArray);
+
+                                showEnemy(gameWindow_ptr, enemiesArray);
+
+                                showMap(gameWindow_ptr, mapArray, randomMapSize);
+
+                                gameRunning = inputAction(gameWindow_ptr, player_ptr, laserArray_ptr, mapArray, randomMapSize);
+
+                                laserAction(gameWindow_ptr, laserArray_ptr, mapArray, randomMapSize);
+
+                                SDL_RenderPresent(gameWindow.renderer);
+
+                                SDL_Delay(50);
+
+                            }
+
+                            // Free memory
+                            SDL_DestroyTexture(player.texture);
+
+                            free(laserArray.array);
+                            free(mapArray);
+                            free(enemiesArray);
+
+                    }
+
+            }
+
+        }
+
+        SDL_RenderPresent(gameWindow_ptr->renderer);
 
     }
 
-    // Player creation
-    Entity player;
-    Entity *player_ptr = &player;
-	player.texture = IMG_LoadTexture(game.renderer,"Images/Worrior/Right.png");
-	player.x = ENTITY_POSX;
-	player.y = ENTITY_POSY;
-	player.w = ENTITY_WIDTH;
-	player.h = ENTITY_HEIGHT;
-	player.direction = 3; // Cambiarlo con la posicion inicial del jugador
-	player.health = 1;
-
-	// Laser creation
-	LaserArray laserArray;
-	LaserArray *laserArray_ptr = &laserArray;
-	laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
-	laserArray.quantity = 0;
-
-    //Enemy creation
-    Entity *enemiesArray;
-    enemiesArray = (Entity*)malloc(6 * sizeof(Entity));
-    enemyGeneration(enemiesArray, mapArray, randomMapSize);
-    enemyInitialAdjustment(enemiesArray, mapArray, randomMapSize);
-
-
-    int running = 1;
-
-    // Infinite loop
-	while(running) {
-
-        SDL_SetRenderDrawColor(game.renderer, 0, 102, 204, 0);
-
-        SDL_RenderClear(game.renderer);
-
-        setPosition(background, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        setPosition(wallpaper, 0, 605, 400, 300);
-
-        setPosition(player.texture, player.x, player.y, player.w, player.h);
-
-        enemiesMovements(enemiesArray);
-
-        showEnemy(enemiesArray);
-
-        showMap(mapArray, randomMapSize);
-
-        running = inputAction(player_ptr, laserArray_ptr, mapArray, randomMapSize);
-
-        laserAction(laserArray_ptr, mapArray, randomMapSize);
-
-		SDL_RenderPresent(game.renderer);
-
-		SDL_Delay(50);
-
-	}
-
-	// Free memory
-	SDL_DestroyTexture(player.texture);
-
-	free(laserArray.array);
-	free(mapArray);
-	free(enemiesArray);
-
 	IMG_Quit();
-	SDL_DestroyRenderer(game.renderer);
-	SDL_DestroyWindow(game.window);
+
+	SDL_DestroyRenderer(gameWindow.renderer);
+	SDL_DestroyWindow(gameWindow.window);
+
 	SDL_Quit();
 
 	return 0;
