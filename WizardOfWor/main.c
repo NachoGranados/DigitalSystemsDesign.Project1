@@ -2255,7 +2255,7 @@ int main (int argc, char **argv) {
                 case SDL_KEYDOWN:
 
                     // Start game
-                    if (event.key.keysym.sym == SDLK_SPACE) {
+                    if (event.key.keysym.sym == SDLK_RETURN) {
 
                             SDL_Texture *gameBackground = IMG_LoadTexture(gameWindow.renderer,"Images/Background.png");
 
