@@ -30,7 +30,16 @@ const int ENTITY_HEIGHT = 65;
 const int ENTITY_SPEED = 13;
 const int ENTITY_MAX_QUANTITY = 6;
 const int ENTITY_MAX_INITIAL_STEPS = 15;
+
 const int ENEMY_SPEED = 5;
+
+const int RADAR_ENEMY_WIDTH = 15;
+const int RADAR_ENEMY_HEIGHT = 15;
+const int RADAR_ENEMY_SPEED = 2;
+const double RADAR_X_RANGE_DIMENSION = 2.85;
+const double RADAR_Y_RANGE_DIMENSION = 2.41;
+const int RADAR_X_RANGE_ADJUSTMENT = 440;
+const int RADAR_Y_RANGE_ADJUSTMENT = 655;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
@@ -1617,9 +1626,9 @@ void createMap1(SDL_Rect *mapArray) {
 
         SDL_Rect rectangle;
 
-        rectangle.x = 463;
-        rectangle.y = 673 + i * 218;
-        rectangle.w = 374;
+        rectangle.x = 459;
+        rectangle.y = 661 + i * 230;
+        rectangle.w = 378;
         rectangle.h = 9;
 
         mapArray[ptr] = rectangle;
@@ -1633,10 +1642,10 @@ void createMap1(SDL_Rect *mapArray) {
 
         SDL_Rect rectangle;
 
-        rectangle.x = 463 + i * 365;
-        rectangle.y = 673;
+        rectangle.x = 459 + i * 369;
+        rectangle.y = 670;
         rectangle.w = 9;
-        rectangle.h = 220;
+        rectangle.h = 223;
 
         mapArray[ptr] = rectangle;
         ptr++;
@@ -1979,9 +1988,9 @@ void createMap2(SDL_Rect *mapArray) {
 
         SDL_Rect rectangle;
 
-        rectangle.x = 463;
-        rectangle.y = 673 + i * 218;
-        rectangle.w = 374;
+        rectangle.x = 459;
+        rectangle.y = 661 + i * 230;
+        rectangle.w = 378;
         rectangle.h = 9;
 
         mapArray[ptr] = rectangle;
@@ -1995,10 +2004,10 @@ void createMap2(SDL_Rect *mapArray) {
 
         SDL_Rect rectangle;
 
-        rectangle.x = 463 + i * 365;
-        rectangle.y = 673;
+        rectangle.x = 459 + i * 369;
+        rectangle.y = 670;
         rectangle.w = 9;
-        rectangle.h = 220;
+        rectangle.h = 223;
 
         mapArray[ptr] = rectangle;
         ptr++;
@@ -2420,9 +2429,9 @@ void createMap3(SDL_Rect *mapArray) {
 
         SDL_Rect rectangle;
 
-        rectangle.x = 463;
-        rectangle.y = 673 + i * 218;
-        rectangle.w = 374;
+        rectangle.x = 459;
+        rectangle.y = 661 + i * 230;
+        rectangle.w = 378;
         rectangle.h = 9;
 
         mapArray[ptr] = rectangle;
@@ -2436,10 +2445,10 @@ void createMap3(SDL_Rect *mapArray) {
 
         SDL_Rect rectangle;
 
-        rectangle.x = 463 + i * 365;
-        rectangle.y = 673;
+        rectangle.x = 459 + i * 369;
+        rectangle.y = 670;
         rectangle.w = 9;
-        rectangle.h = 220;
+        rectangle.h = 223;
 
         mapArray[ptr] = rectangle;
         ptr++;
@@ -2488,6 +2497,51 @@ void showMap(Game *gameWindow, SDL_Rect *mapArray, int arraySize) {
     for (int i = 0; i < arraySize; i++) {
 
         SDL_RenderFillRect(gameWindow->renderer, &mapArray[i]);
+
+    }
+
+}
+
+/*
+  This function creates the necessary rectangles to build the enemies on the radar space
+*/
+void createRadarEnemies(SDL_Rect *radarEnemyArray) {
+
+    for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        SDL_Rect rectangle;
+
+        rectangle.w = RADAR_ENEMY_WIDTH;
+        rectangle.h = RADAR_ENEMY_HEIGHT;
+
+        radarEnemyArray[i] = rectangle;
+
+    }
+
+}
+
+/*
+  This function shows every rectangle given by the array in the radar space
+*/
+void updateRadarEnemies(SDL_Rect *radarEnemyArray, Entity *enemiesArray) {
+
+    for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        radarEnemyArray[i].x = (enemiesArray[i].x / RADAR_X_RANGE_DIMENSION) + RADAR_X_RANGE_ADJUSTMENT;
+        radarEnemyArray[i].y = (enemiesArray[i].y / RADAR_Y_RANGE_DIMENSION) + RADAR_Y_RANGE_ADJUSTMENT;
+
+    }
+
+}
+
+/*
+  This function shows every rectangle given by the array in the radar space
+*/
+void showRadarEnemies(Game *gameWindow, SDL_Rect *radarEnemyArray) {
+
+    for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        SDL_RenderFillRect(gameWindow->renderer, &radarEnemyArray[i]);
 
     }
 
@@ -2608,6 +2662,12 @@ int main (int argc, char **argv) {
                             enemyGeneration(gameWindow_ptr, enemiesArray, mapArray, randomMapSize);
                             enemyInitialAdjustment(enemiesArray, mapArray, randomMapSize);
 
+                            // Radar enemy creation
+                            SDL_Rect *radarEnemyArray;
+                            radarEnemyArray = (SDL_Rect*)malloc(ENTITY_MAX_QUANTITY * sizeof(SDL_Rect));
+                            createRadarEnemies(radarEnemyArray);
+                            updateRadarEnemies(radarEnemyArray, enemiesArray);
+
                             int gameRunning = 1;
 
                             // Infinite loop
@@ -2629,6 +2689,10 @@ int main (int argc, char **argv) {
 
                                 showEnemy(gameWindow_ptr, enemiesArray);
 
+                                updateRadarEnemies(radarEnemyArray, enemiesArray);
+
+                                showRadarEnemies(gameWindow_ptr, radarEnemyArray);
+
                                 showMap(gameWindow_ptr, mapArray, randomMapSize);
 
                                 gameRunning = inputAction(gameWindow_ptr, player_ptr, laserArray_ptr, mapArray, randomMapSize);
@@ -2647,6 +2711,7 @@ int main (int argc, char **argv) {
                             free(laserArray.array);
                             free(mapArray);
                             free(enemiesArray);
+                            free(radarEnemyArray);
 
                     }
 
