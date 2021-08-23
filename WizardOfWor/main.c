@@ -46,11 +46,11 @@ const int DOWN = 1;
 const int LEFT = 2;
 const int RIGHT = 3;
 
-//const int BURWOR = 0;
-//const int GARWOR = 1;
-//const int THORWOR = 2;
-//const int WIZARD = 3;
-//const int WORLUK = 4;
+const int BURWOR = 1;
+const int GARWOR = 2;
+const int THORWOR = 3;
+const int WIZARD = 4;
+const int WORLUK = 5;
 
 // Structures definition
 typedef struct {
@@ -70,6 +70,8 @@ typedef struct {
     int direction;
 
     int health;
+
+    int number;
 
     SDL_Texture *texture;
 
@@ -616,6 +618,188 @@ int overstepEnemy (Entity *enemiesArray, int i) {
 }
 
 /*
+  This function assigns the correct image to the given enemy based on the direction it has.
+*/
+void loadEnemyImage(Game *gameWindow, Entity *enemy) {
+
+    // Switch of enemy types
+    switch(enemy->number) {
+
+        // Burwor
+        case 1:
+
+            // Switch of directions
+            switch(enemy->direction) {
+
+                // Up
+                case 0:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Up.png");
+                    break;
+
+                // Down
+                case 1:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Down.png");
+                    break;
+
+                //Left
+                case 2:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Left.png");
+                    break;
+
+                // Right
+                case 3:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Right.png");
+                    break;
+
+            }
+
+            break;
+
+        // Garwor
+        case 2:
+
+            // Switch of directions
+            switch(enemy->direction) {
+
+                // Up
+                case 0:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Up.png");
+                    break;
+
+                // Down
+                case 1:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Down.png");
+                    break;
+
+                //Left
+                case 2:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Left.png");
+                    break;
+
+                // Right
+                case 3:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Right.png");
+                    break;
+
+            }
+
+            break;
+
+        // Thorwor
+        case 3:
+
+            // Switch of directions
+            switch(enemy->direction) {
+
+                // Up
+                case 0:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Up.png");
+                    break;
+
+                // Down
+                case 1:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Down.png");
+                    break;
+
+                //Left
+                case 2:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Left.png");
+                    break;
+
+                // Right
+                case 3:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Right.png");
+                    break;
+
+            }
+
+            break;
+
+        // Wizard
+        case 4:
+
+            // Switch of directions
+            switch(enemy->direction) {
+
+                // Up
+                case 0:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Up.png");
+                    break;
+
+                // Down
+                case 1:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Down.png");
+                    break;
+
+                //Left
+                case 2:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Left.png");
+                    break;
+
+                // Right
+                case 3:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Right.png");
+                    break;
+
+            }
+
+            break;
+
+        // Worluk
+        case 5:
+
+            // Switch of directions
+            switch(enemy->direction) {
+
+                // Up
+                case 0:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Up.png");
+                    break;
+
+                // Down
+                case 1:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Down.png");
+                    break;
+
+                //Left
+                case 2:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Left.png");
+                    break;
+
+                // Right
+                case 3:
+
+                    enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Right.png");
+                    break;
+
+            }
+
+            break;
+
+    }
+
+}
+
+/*
   This function creates the array of enemies that will appear during the game
 */
 void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray, int randomMapSize) {
@@ -651,19 +835,19 @@ void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray,
             random_x = (rand() % MAP_MAX_X_MARGIN) + MAP_MIN_X_MARGIN;
             random_y = (rand() % MAP_MAX_Y_MARGIN) + MAP_MIN_Y_MARGIN;
 
-            enemiesArray[enemy_index].x = random_x;
-            enemiesArray[enemy_index].y = random_y;
+            enemy->x = random_x;
+            enemy->y = random_y;
 
-            collision_up = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            collision_up = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
                            ENTITY_SPEED, 0, 0);
 
-            collision_down = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            collision_down = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
                              ENTITY_SPEED, 0, 1);
 
-            collision_left = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            collision_left = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
                              ENTITY_SPEED, 0, 2);
 
-            collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+            collision_right = checkCollison(enemy, mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
                               ENTITY_SPEED, 0, 3);
 
             overstep = overstepEnemy(enemiesArray, enemy_index);
@@ -677,46 +861,56 @@ void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray,
 
         }
 
-        random_texture = rand() % 4;
+        random_texture = (rand() % 5) + 1;
 
         switch (random_texture) {
 
-        case 0:
+            // Burwor
+            case 1:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Right.png");
+                enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Burwor/Right.png");
+                enemy->number = BURWOR;
 
-            break;
+                break;
 
-        case 1:
+            // Garwor
+            case 2:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Right.png");
+                enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Garwor/Right.png");
+                enemy->number = GARWOR;
 
-            break;
+                break;
 
-        case 2:
+            // Thorwor
+            case 3:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Right.png");
+                enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Thorwor/Right.png");
+                enemy->number = THORWOR;
 
-            break;
+                break;
 
-        case 3:
+            // Wizard
+            case 4:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Right.png");
+                enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Wizard/Right.png");
+                enemy->number = WIZARD;
 
-            break;
+                break;
 
-        case 4:
+            // Worluk
+            case 5:
 
-            enemiesArray[enemy_index].texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Right.png");
+                enemy->texture = IMG_LoadTexture(gameWindow->renderer,"Images/Worluk/Right.png");
+                enemy->number = WORLUK;
 
-            break;
+                break;
 
         }
 
-        enemiesArray[enemy_index].w = ENTITY_WIDTH;
-        enemiesArray[enemy_index].h = ENTITY_HEIGHT;
-        enemiesArray[enemy_index].direction = 3;
-        enemiesArray[enemy_index].health = 1;
+        enemy->w = ENTITY_WIDTH;
+        enemy->h = ENTITY_HEIGHT;
+        enemy->direction = 3;
+        enemy->health = 1;
 
     }
 
@@ -725,7 +919,7 @@ void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray,
 /*
   This function moves every single enemy through the window
 */
-void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, int randomMapSize) {
+void enemiesMovements(Game *gameWindow, Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, int randomMapSize) {
 
     int collision_up;
     int collision_down;
@@ -785,8 +979,6 @@ void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, 
 
                 randomDirection = rand() % 4;
 
-                printf("random = %d \n", randomDirection);
-
                 // Up movement
                 if (randomDirection == 0 && randomDirection != enemy->direction &&
                     collision_up == 0 && movement == 0) {
@@ -797,7 +989,7 @@ void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, 
                 }
 
                 if (randomDirection == 1 && randomDirection != enemy->direction &&
-                           collision_down == 0 && movement == 0) {
+                    collision_down == 0 && movement == 0) {
 
                     running = 0;
                     movement = 1;
@@ -806,7 +998,7 @@ void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, 
 
                 // Left movement
                 if (randomDirection == 2 && randomDirection != enemy->direction &&
-                           collision_left == 0 && movement == 0) {
+                    collision_left == 0 && movement == 0) {
 
                     running = 0;
                     movement = 1;
@@ -815,7 +1007,7 @@ void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, 
 
                 // Right movement
                 if (randomDirection == 3 && randomDirection != enemy->direction &&
-                           collision_right == 0 && movement == 0) {
+                    collision_right == 0 && movement == 0) {
 
                     running = 0;
                     movement = 1;
@@ -828,110 +1020,7 @@ void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, 
 
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        if (enemy->x >= player->x - 10 || enemy->x <= player->x + 10){
-
-
-        }
-        if (enemy->x > player->x && collision_left == 0 && movement == 0 && enemy->x > player->x + 10){
-
-
-                enemy->x-= ENEMY_SPEED;
-                movement = 1;
-        }
-
-       else if (enemy->x < player->x && collision_right == 0 && movement == 0  && enemy->x < player->x - 10){
-
-                enemy->x += ENEMY_SPEED;
-                movement = 1;
-        }
-
-        if (enemy->y > player->y && collision_up == 0 && movement == 0){
-
-                enemy->y -= ENEMY_SPEED;
-                movement = 1;
-        }
-
-        else if (enemy->y < player->y && collision_down == 0 && movement == 0){
-
-                enemy->y += ENEMY_SPEED;
-                movement = 1;
-        }
-
-
-
-
-
-
-
-        //direction_set = rand() % 3;
-
-        //printf("POSITION %d", enemiesArray[enemy_index].x);
-        //printf("DIRECTION %d", direction_set);
-
-        //printf("PLAYER X POSITION %d", player->x);
-        //printf("PLAYER Y POSITION %d", player->y);
-
-        //direction_set = (rand() % 3 ) + 0;
-
-        //enemiesArray[enemy_index].y += ENTITY_SPEED;
-        //enemiesArray[enemy_index].x += ENTITY_SPEED;
-
-        //Must set the user coordinates in order to follow him
-
-
-
-
-        while(enemiesArray[enemy_index].x != player_posx){
-
-
-            if (player_posx < enemiesArray[enemy_index].x ) {
-
-                printf("ENTRO MENOR %s", "MENOR");
-
-                enemiesArray[enemy_index].x -= ENTITY_SPEED;
-
-            }
-
-
-            if (player_posx > enemiesArray[enemy_index].x ) {
-
-                printf("ENTRO MAYOR %s", "MAYOR");
-
-                enemiesArray[enemy_index].x += ENTITY_SPEED;
-
-            }
-
-
-        }
-        */
-
-
+        loadEnemyImage(gameWindow, enemy);
 
     }
 
@@ -2469,7 +2558,6 @@ int main (int argc, char **argv) {
                             srand(time(0));
 
                             int randomMap = (rand() % 3) + 1;
-                            //int randomMap = 3;
 
                             int randomMapSize;
 
@@ -2506,6 +2594,7 @@ int main (int argc, char **argv) {
                             player.h = ENTITY_HEIGHT;
                             player.direction = 3; // Cambiarlo con la posicion inicial del jugador
                             player.health = 1;
+                            player.number = 0;
 
                             // Laser creation
                             LaserArray laserArray;
@@ -2536,7 +2625,7 @@ int main (int argc, char **argv) {
 
                                 setPosition(gameWindow_ptr, player.texture, player.x, player.y, player.w, player.h);
 
-                                enemiesMovements(enemiesArray, player_ptr, mapArray, randomMapSize);
+                                enemiesMovements(gameWindow_ptr, enemiesArray, player_ptr, mapArray, randomMapSize);
 
                                 showEnemy(gameWindow_ptr, enemiesArray);
 
