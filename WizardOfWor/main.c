@@ -724,21 +724,60 @@ void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray,
 /*
   This function moves every single enemy through the window
 */
-void enemiesMovements(Entity *enemiesArray) {
-
-    printf("%s \n", "ENTRA FUNCIÓN");
+void enemiesMovements(Entity *enemiesArray, Entity *player) {
 
     //To set the direction
     int direction_set;
 
+    int player_posx = player->x;
+    int player_posy = player->y;
+
     for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
+
 
         direction_set = rand() % 3;
 
         printf("POSITION %d", enemiesArray[enemy_index].x);
         printf("DIRECTION %d", direction_set);
 
+        //printf("PLAYER X POSITION %d", player->x);
+        //printf("PLAYER Y POSITION %d", player->y);
+
+        direction_set = (rand() % 3 ) + 0;
+
+        enemiesArray[enemy_index].y += ENTITY_SPEED;
         enemiesArray[enemy_index].x += ENTITY_SPEED;
+
+        //Must set the user coordinates in order to follow him
+
+
+
+        /*
+        while(enemiesArray[enemy_index].x != player_posx){
+
+
+            if (player_posx < enemiesArray[enemy_index].x ) {
+
+                printf("ENTRO MENOR %s", "MENOR");
+
+                enemiesArray[enemy_index].x -= ENTITY_SPEED;
+
+            }
+
+
+            if (player_posx > enemiesArray[enemy_index].x ) {
+
+                printf("ENTRO MAYOR %s", "MAYOR");
+
+                enemiesArray[enemy_index].x += ENTITY_SPEED;
+
+            }
+
+
+        }
+        */
+
+
 
     }
 
@@ -817,6 +856,8 @@ void enemyInitialAdjustment(Entity *enemiesArray, SDL_Rect *mapArray, int random
     }
 
 }
+
+
 
 /*
   This function show every enemy in the window
@@ -2343,7 +2384,7 @@ int main (int argc, char **argv) {
 
                                 setPosition(gameWindow_ptr, player.texture, player.x, player.y, player.w, player.h);
 
-                                enemiesMovements(enemiesArray);
+                                enemiesMovements(enemiesArray, player_ptr);
 
                                 showEnemy(gameWindow_ptr, enemiesArray);
 
