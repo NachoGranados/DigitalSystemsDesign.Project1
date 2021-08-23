@@ -30,6 +30,7 @@ const int ENTITY_HEIGHT = 65;
 const int ENTITY_SPEED = 13;
 const int ENTITY_MAX_QUANTITY = 6;
 const int ENTITY_MAX_INITIAL_STEPS = 15;
+const int ENEMY_SPEED = 5;
 
 const int MAP_1_3_SIZE = 51;
 const int MAP_2_SIZE = 41;
@@ -724,7 +725,7 @@ void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray,
 /*
   This function moves every single enemy through the window
 */
-void enemiesMovements(Entity *enemiesArray, Entity *player) {
+void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, int randomMapSize) {
 
     //To set the direction
     int direction_set;
@@ -732,21 +733,85 @@ void enemiesMovements(Entity *enemiesArray, Entity *player) {
     int player_posx = player->x;
     int player_posy = player->y;
 
+
+    int collision_up;
+    int collision_down;
+    int collision_left;
+    int collision_right;
+
+    Entity *enemy;
+
+    int movement;
+
     for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
 
+        enemy = &enemiesArray[enemy_index];
 
-        direction_set = rand() % 3;
+        movement = 0;
 
-        printf("POSITION %d", enemiesArray[enemy_index].x);
-        printf("DIRECTION %d", direction_set);
+
+        collision_up = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                           ENTITY_SPEED, 0, 0);
+
+        collision_down = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                             ENTITY_SPEED, 0, 1);
+
+        collision_left = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                             ENTITY_SPEED, 0, 2);
+
+        collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
+                              ENTITY_SPEED, 0, 3);
+
+                              //&& enemy->x >= player->x - ENTITY_WIDTH
+
+
+        if (enemy->x >= player->x - 10 || enemy->x <= player->x + 10){
+
+
+        }
+        if (enemy->x > player->x && collision_left == 0 && movement == 0 && enemy->x > player->x + 10){
+
+
+                enemy->x-= ENEMY_SPEED;
+                movement = 1;
+        }
+
+       else if (enemy->x < player->x && collision_right == 0 && movement == 0  && enemy->x < player->x - 10){
+
+                enemy->x += ENEMY_SPEED;
+                movement = 1;
+        }
+
+        if (enemy->y > player->y && collision_up == 0 && movement == 0){
+
+                enemy->y -= ENEMY_SPEED;
+                movement = 1;
+        }
+
+        else if (enemy->y < player->y && collision_down == 0 && movement == 0){
+
+                enemy->y += ENEMY_SPEED;
+                movement = 1;
+        }
+
+
+
+
+
+
+
+        //direction_set = rand() % 3;
+
+        //printf("POSITION %d", enemiesArray[enemy_index].x);
+        //printf("DIRECTION %d", direction_set);
 
         //printf("PLAYER X POSITION %d", player->x);
         //printf("PLAYER Y POSITION %d", player->y);
 
-        direction_set = (rand() % 3 ) + 0;
+        //direction_set = (rand() % 3 ) + 0;
 
-        enemiesArray[enemy_index].y += ENTITY_SPEED;
-        enemiesArray[enemy_index].x += ENTITY_SPEED;
+        //enemiesArray[enemy_index].y += ENTITY_SPEED;
+        //enemiesArray[enemy_index].x += ENTITY_SPEED;
 
         //Must set the user coordinates in order to follow him
 
@@ -2384,7 +2449,7 @@ int main (int argc, char **argv) {
 
                                 setPosition(gameWindow_ptr, player.texture, player.x, player.y, player.w, player.h);
 
-                                enemiesMovements(enemiesArray, player_ptr);
+                                enemiesMovements(enemiesArray, player_ptr, mapArray, randomMapSize);
 
                                 showEnemy(gameWindow_ptr, enemiesArray);
 

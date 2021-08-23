@@ -574,11 +574,12 @@
 	<SDL2/SDL_image.h>
 	<SDL2/SDL_ttf.h>
 
-1629693846 source:/home/joshua/Descargas/WizardofWor/SDL2/WizardOfWor/main.c
+1629700831 source:/home/joshua/Descargas/WizardofWor/SDL2/WizardOfWor/main.c
 	<stdlib.h>
 	<stdio.h>
 	<stdbool.h>
 	<time.h>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
+	<SDL2/SDL_ttf.h>
 
