@@ -727,44 +727,133 @@ void enemyGeneration(Game *gameWindow, Entity *enemiesArray, SDL_Rect *mapArray,
 */
 void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, int randomMapSize) {
 
-    //To set the direction
-    int direction_set;
-
-    int player_posx = player->x;
-    int player_posy = player->y;
-
-
     int collision_up;
     int collision_down;
     int collision_left;
     int collision_right;
 
-    Entity *enemy;
+    int randomDirection;
 
     int movement;
+
+    Entity *enemy;
 
     for(int enemy_index = 0; enemy_index<ENTITY_MAX_QUANTITY; enemy_index++) {
 
         enemy = &enemiesArray[enemy_index];
 
-        movement = 0;
-
-
         collision_up = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-                           ENTITY_SPEED, 0, 0);
+                       ENTITY_SPEED, 0, 0);
 
         collision_down = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-                             ENTITY_SPEED, 0, 1);
+                         ENTITY_SPEED, 0, 1);
 
         collision_left = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-                             ENTITY_SPEED, 0, 2);
+                         ENTITY_SPEED, 0, 2);
 
         collision_right = checkCollison(enemy,mapArray, randomMapSize, ENTITY_WIDTH, ENTITY_HEIGHT,
-                              ENTITY_SPEED, 0, 3);
+                          ENTITY_SPEED, 0, 3);
 
-                              //&& enemy->x >= player->x - ENTITY_WIDTH
+        // Up movement
+        if (enemy->direction == 0 && collision_up == 0) {
+
+            enemy->y -= ENEMY_SPEED;
+
+        // Down movement
+        } else if (enemy->direction == 1 && collision_down == 0) {
+
+            enemy->y += ENEMY_SPEED;
+
+        // Left movement
+        } else if (enemy->direction == 2 && collision_left == 0) {
+
+            enemy->x -= ENEMY_SPEED;
+
+        // Right movement
+        } else if (enemy->direction == 3 && collision_right == 0) {
+
+            enemy->x += ENEMY_SPEED;
+
+        // Assign new random direction
+        } else {
+
+            int running = 1;
+
+            movement = 0;
+
+            while(running) {
+
+                randomDirection = rand() % 4;
+
+                printf("random = %d \n", randomDirection);
+
+                // Up movement
+                if (randomDirection == 0 && randomDirection != enemy->direction &&
+                    collision_up == 0 && movement == 0) {
+
+                    running = 0;
+                    movement = 1;
+
+                }
+
+                if (randomDirection == 1 && randomDirection != enemy->direction &&
+                           collision_down == 0 && movement == 0) {
+
+                    running = 0;
+                    movement = 1;
+
+               }
+
+                // Left movement
+                if (randomDirection == 2 && randomDirection != enemy->direction &&
+                           collision_left == 0 && movement == 0) {
+
+                    running = 0;
+                    movement = 1;
+
+               }
+
+                // Right movement
+                if (randomDirection == 3 && randomDirection != enemy->direction &&
+                           collision_right == 0 && movement == 0) {
+
+                    running = 0;
+                    movement = 1;
+
+                }
+
+            }
+
+            enemy->direction = randomDirection;
+
+        }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
         if (enemy->x >= player->x - 10 || enemy->x <= player->x + 10){
 
 
@@ -817,7 +906,7 @@ void enemiesMovements(Entity *enemiesArray, Entity *player, SDL_Rect *mapArray, 
 
 
 
-        /*
+
         while(enemiesArray[enemy_index].x != player_posx){
 
 
@@ -921,8 +1010,6 @@ void enemyInitialAdjustment(Entity *enemiesArray, SDL_Rect *mapArray, int random
     }
 
 }
-
-
 
 /*
   This function show every enemy in the window
