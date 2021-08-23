@@ -82,6 +82,8 @@ typedef struct {
 
     int number;
 
+    int score;
+
     SDL_Texture *texture;
 
 } Entity;
@@ -566,6 +568,44 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
     }
 
     return result;
+
+}
+
+/*
+  This function checks if the lasers collide with any enemy in the respective direction
+*/
+void destroyEntity(Entity *enemiesArray, LaserArray *laserArray) {
+
+    // Checking lasers
+    for (int i = 0; i < LASER_MAX_QUANTITY; i++) {
+
+        // Checking enemies
+        for (int j = 0; j < ENTITY_MAX_QUANTITY; j++) {
+
+            // Checking if the laser and the enemy are alive
+            if (laserArray->array[i].health == 1 && enemiesArray[j].health == 1) {
+
+                // Similar X position
+                if (laserArray->array[i].x >= enemiesArray[j].x && laserArray->array[i].x <= enemiesArray[j].x + ENTITY_WIDTH &&
+
+                    // Similar Y position
+                    laserArray->array[i].y >= enemiesArray[j].y && laserArray->array[i].y <= enemiesArray[j].y + ENTITY_HEIGHT) {
+
+                        laserArray->array[i].health = 0;
+                        laserArray->array[i].x = 0;
+                        laserArray->array[i].y = 0;
+
+                        enemiesArray[j].health = 0;
+                        enemiesArray[j].x = 0;
+                        enemiesArray[j].y = 0;
+
+                }
+
+            }
+
+        }
+
+    }
 
 }
 
@@ -1117,8 +1157,13 @@ void showEnemy(Game *gameWindow, Entity *enemiesArray) {
     //Set position for each initial enemy
     for(int enemy_index = 0; enemy_index < ENTITY_MAX_QUANTITY; enemy_index++) {
 
-        setPosition(gameWindow, enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x,
-                    enemiesArray[enemy_index].y, ENTITY_WIDTH, ENTITY_HEIGHT);
+        // Checking if the enemy is alive
+        if (enemiesArray[enemy_index].health == 1) {
+
+            setPosition(gameWindow, enemiesArray[enemy_index].texture,enemiesArray[enemy_index].x,
+                        enemiesArray[enemy_index].y, ENTITY_WIDTH, ENTITY_HEIGHT);
+
+        }
 
     }
 
@@ -1280,6 +1325,7 @@ void laserAction(Game *gameWindow, LaserArray *laserArray, SDL_Rect *mapArray, i
 
             }
 
+            // Checking if the laser is alive
             if (laser->health == 1) {
 
                 setPosition(gameWindow, laser->texture, laser->x, laser->y, laser->w, laser->h);
@@ -2409,11 +2455,15 @@ void updateRadarEnemies(SDL_Rect *radarEnemyArray, Entity *enemiesArray) {
 /*
   This function shows every rectangle given by the array in the radar space
 */
-void showRadarEnemies(Game *gameWindow, SDL_Rect *radarEnemyArray) {
+void showRadarEnemies(Game *gameWindow, Entity *enemiesArray, SDL_Rect *radarEnemyArray) {
 
     for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
 
-        SDL_RenderFillRect(gameWindow->renderer, &radarEnemyArray[i]);
+        if (enemiesArray[i].health == 1) {
+
+            SDL_RenderFillRect(gameWindow->renderer, &radarEnemyArray[i]);
+
+        }
 
     }
 
@@ -2518,7 +2568,7 @@ int main (int argc, char **argv) {
                             player.y = ENTITY_POSY;
                             player.w = ENTITY_WIDTH;
                             player.h = ENTITY_HEIGHT;
-                            player.direction = 3; // Cambiarlo con la posicion inicial del jugador
+                            player.direction = 3;
                             player.health = 1;
                             player.number = 0;
 
@@ -2527,6 +2577,22 @@ int main (int argc, char **argv) {
                             LaserArray *laserArray_ptr = &laserArray;
                             laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
                             laserArray.quantity = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                             //Enemy creation
                             Entity *enemiesArray;
@@ -2563,13 +2629,15 @@ int main (int argc, char **argv) {
 
                                 updateRadarEnemies(radarEnemyArray, enemiesArray);
 
-                                showRadarEnemies(gameWindow_ptr, radarEnemyArray);
+                                showRadarEnemies(gameWindow_ptr, enemiesArray, radarEnemyArray);
 
                                 showMap(gameWindow_ptr, mapArray, randomMapSize);
 
                                 gameRunning = inputAction(gameWindow_ptr, player_ptr, laserArray_ptr, mapArray, randomMapSize);
 
                                 laserAction(gameWindow_ptr, laserArray_ptr, mapArray, randomMapSize);
+
+                                destroyEntity(enemiesArray, laserArray_ptr);
 
                                 SDL_RenderPresent(gameWindow.renderer);
 
