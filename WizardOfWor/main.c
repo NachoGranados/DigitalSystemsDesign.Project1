@@ -41,8 +41,8 @@ const double RADAR_Y_RANGE_DIMENSION = 2.41;
 const int RADAR_X_RANGE_ADJUSTMENT = 440;
 const int RADAR_Y_RANGE_ADJUSTMENT = 655;
 
-const int MAP_1_3_SIZE = 51;
-const int MAP_2_SIZE = 41;
+const int MAP_1_3_SIZE = 48;
+const int MAP_2_SIZE = 38;
 
 const int MAP_MIN_X_MARGIN = 90;
 const int MAP_MAX_X_MARGIN = 850;
@@ -1423,39 +1423,15 @@ void createMap1(SDL_Rect *mapArray) {
     }
 
 
-    // Bottom horizontal line 1
+    // Bottom horizontal line
     SDL_Rect rectangleBottom1;
 
     rectangleBottom1.x = 80;
     rectangleBottom1.y = 596;
-    rectangleBottom1.w = 947;
+    rectangleBottom1.w = 1038;
     rectangleBottom1.h = 9;
 
     mapArray[ptr] = rectangleBottom1;
-    ptr++;
-
-
-    // Bottom horizontal line 2 ---- door
-    SDL_Rect rectangleBottom2;
-
-    rectangleBottom2.x = 1026;
-    rectangleBottom2.y = 596;
-    rectangleBottom2.w = 93;
-    rectangleBottom2.h = 9;
-
-    mapArray[ptr] = rectangleBottom2;
-    ptr++;
-
-
-    // Down horizontal line
-    SDL_Rect rectangleDown;
-
-    rectangleDown.x = 1018;
-    rectangleDown.y = 685;
-    rectangleDown.w = 100;
-    rectangleDown.h = 9;
-
-    mapArray[ptr] = rectangleDown;
     ptr++;
 
 
@@ -1506,16 +1482,21 @@ void createMap1(SDL_Rect *mapArray) {
 
     }
 
-    // Left vertical line
-    SDL_Rect rectangleLeftVertical;
 
-    rectangleLeftVertical.x = 80;
-    rectangleLeftVertical.y = 314;
-    rectangleLeftVertical.w = 9;
-    rectangleLeftVertical.h = 290;
+    // Side vertical lines
+    for (int i = 0; i < 2; i++) {
 
-    mapArray[ptr] = rectangleLeftVertical;
-    ptr++;
+        SDL_Rect rectangle;
+
+        rectangle.x = 80 + i * 1030;
+        rectangle.y = 314;
+        rectangle.w = 9;
+        rectangle.h = 290;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
 
 
     // Third level left vertical lines
@@ -1596,29 +1577,6 @@ void createMap1(SDL_Rect *mapArray) {
         ptr++;
 
     }
-
-    // Right vertical line
-    SDL_Rect rectangleRightVertical;
-
-    rectangleRightVertical.x = 1110;
-    rectangleRightVertical.y = 314;
-    rectangleRightVertical.w = 9;
-    rectangleRightVertical.h = 380;
-
-    mapArray[ptr] = rectangleRightVertical;
-    ptr++;
-
-
-    // Sixth level vertical line
-    SDL_Rect rectangleDownVertical;
-
-    rectangleDownVertical.x = 1018;
-    rectangleDownVertical.y = 604;
-    rectangleDownVertical.w = 9;
-    rectangleDownVertical.h = 90;
-
-    mapArray[ptr] = rectangleDownVertical;
-    ptr++;
 
 
     // Radar horizontal lines
@@ -1816,39 +1774,15 @@ void createMap2(SDL_Rect *mapArray) {
     }
 
 
-    // Bottom horizontal line 1
+    // Bottom horizontal line
     SDL_Rect rectangleBottom1;
 
     rectangleBottom1.x = 80;
     rectangleBottom1.y = 596;
-    rectangleBottom1.w = 947;
+    rectangleBottom1.w = 1038;
     rectangleBottom1.h = 9;
 
     mapArray[ptr] = rectangleBottom1;
-    ptr++;
-
-
-    // Bottom horizontal line 2 ---- door
-    SDL_Rect rectangleBottom2;
-
-    rectangleBottom2.x = 1026;
-    rectangleBottom2.y = 596;
-    rectangleBottom2.w = 93;
-    rectangleBottom2.h = 9;
-
-    mapArray[ptr] = rectangleBottom2;
-    ptr++;
-
-
-    // Down horizontal line
-    SDL_Rect rectangleDown;
-
-    rectangleDown.x = 1018;
-    rectangleDown.y = 685;
-    rectangleDown.w = 100;
-    rectangleDown.h = 9;
-
-    mapArray[ptr] = rectangleDown;
     ptr++;
 
 
@@ -1915,16 +1849,21 @@ void createMap2(SDL_Rect *mapArray) {
 
     }
 
-    // Left vertical line
-    SDL_Rect rectangleLeftVertical;
 
-    rectangleLeftVertical.x = 80;
-    rectangleLeftVertical.y = 314;
-    rectangleLeftVertical.w = 9;
-    rectangleLeftVertical.h = 290;
+    // Side vertical lines
+    for (int i = 0; i < 2; i++) {
 
-    mapArray[ptr] = rectangleLeftVertical;
-    ptr++;
+        SDL_Rect rectangle;
+
+        rectangle.x = 80 + i * 1030;
+        rectangle.y = 314;
+        rectangle.w = 9;
+        rectangle.h = 290;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
 
 
     // Third level left vertical lines
@@ -1957,30 +1896,6 @@ void createMap2(SDL_Rect *mapArray) {
         ptr++;
 
     }
-
-
-    // Right vertical line
-    SDL_Rect rectangleRightVertical;
-
-    rectangleRightVertical.x = 1110;
-    rectangleRightVertical.y = 314;
-    rectangleRightVertical.w = 9;
-    rectangleRightVertical.h = 380;
-
-    mapArray[ptr] = rectangleRightVertical;
-    ptr++;
-
-
-    // Sixth level vertical line
-    SDL_Rect rectangleDownVertical;
-
-    rectangleDownVertical.x = 1018;
-    rectangleDownVertical.y = 604;
-    rectangleDownVertical.w = 9;
-    rectangleDownVertical.h = 90;
-
-    mapArray[ptr] = rectangleDownVertical;
-    ptr++;
 
 
     // Radar horizontal lines
@@ -2210,39 +2125,15 @@ void createMap3(SDL_Rect *mapArray) {
     }
 
 
-    // Bottom horizontal line 1
+    // Bottom horizontal line
     SDL_Rect rectangleBottom1;
 
     rectangleBottom1.x = 80;
     rectangleBottom1.y = 596;
-    rectangleBottom1.w = 947;
+    rectangleBottom1.w = 1038;
     rectangleBottom1.h = 9;
 
     mapArray[ptr] = rectangleBottom1;
-    ptr++;
-
-
-    // Bottom horizontal line 2 ---- door
-    SDL_Rect rectangleBottom2;
-
-    rectangleBottom2.x = 1026;
-    rectangleBottom2.y = 596;
-    rectangleBottom2.w = 93;
-    rectangleBottom2.h = 9;
-
-    mapArray[ptr] = rectangleBottom2;
-    ptr++;
-
-
-    // Down horizontal line
-    SDL_Rect rectangleDown;
-
-    rectangleDown.x = 1018;
-    rectangleDown.y = 685;
-    rectangleDown.w = 100;
-    rectangleDown.h = 9;
-
-    mapArray[ptr] = rectangleDown;
     ptr++;
 
 
@@ -2293,16 +2184,20 @@ void createMap3(SDL_Rect *mapArray) {
 
     }
 
-    // Left vertical line
-    SDL_Rect rectangleLeftVertical;
+    // Side vertical lines
+    for (int i = 0; i < 2; i++) {
 
-    rectangleLeftVertical.x = 80;
-    rectangleLeftVertical.y = 314;
-    rectangleLeftVertical.w = 9;
-    rectangleLeftVertical.h = 290;
+        SDL_Rect rectangle;
 
-    mapArray[ptr] = rectangleLeftVertical;
-    ptr++;
+        rectangle.x = 80 + i * 1030;
+        rectangle.y = 314;
+        rectangle.w = 9;
+        rectangle.h = 290;
+
+        mapArray[ptr] = rectangle;
+        ptr++;
+
+    }
 
 
     // Third level side vertical lines
@@ -2399,29 +2294,6 @@ void createMap3(SDL_Rect *mapArray) {
         ptr++;
 
     }
-
-    // Right vertical line
-    SDL_Rect rectangleRightVertical;
-
-    rectangleRightVertical.x = 1110;
-    rectangleRightVertical.y = 314;
-    rectangleRightVertical.w = 9;
-    rectangleRightVertical.h = 380;
-
-    mapArray[ptr] = rectangleRightVertical;
-    ptr++;
-
-
-    // Sixth level vertical line
-    SDL_Rect rectangleDownVertical;
-
-    rectangleDownVertical.x = 1018;
-    rectangleDownVertical.y = 604;
-    rectangleDownVertical.w = 9;
-    rectangleDownVertical.h = 90;
-
-    mapArray[ptr] = rectangleDownVertical;
-    ptr++;
 
 
     // Radar horizontal lines
