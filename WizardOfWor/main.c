@@ -62,6 +62,11 @@ const int THORWOR = 3;
 const int WIZARD = 4;
 const int WORLUK = 5;
 
+const int HIGH_SCORE = 600;
+
+const int TROPHY_WIDTH = 430;
+const int TROPHY_HEIGHT = 240;
+
 // Structures definition
 typedef struct {
 
@@ -96,9 +101,6 @@ typedef struct {
     Entity *array;
 
 } LaserArray;
-
-
-
 
 // Functions definition
 /*
@@ -575,10 +577,19 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
 
 }
 
+
+
+
+
+
+
+
+
+
 /*
   This function checks if the lasers collide with any enemy in the respective direction
 */
-void destroyEntity(Entity *player, Entity *enemiesArray, LaserArray *laserArray) {
+void destroyLaserEnemy(Entity *player, Entity *enemiesArray, LaserArray *laserArray) {
 
     // Checking lasers
     for (int i = 0; i < LASER_MAX_QUANTITY; i++) {
@@ -614,6 +625,44 @@ void destroyEntity(Entity *player, Entity *enemiesArray, LaserArray *laserArray)
     }
 
 }
+
+/*
+  This function checks if the player collides with any enemy in the respective direction
+*/
+void destroyPlayerEnemy(Entity *player, Entity *enemiesArray) {
+
+    // Checking enemies
+    for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        // Checking if the player and the enemy are alive
+        if (player->health > 0 && enemiesArray[i].health == 1) {
+
+            // Similar X position
+            if (player->x + LASER_ADJUSTMENT >= enemiesArray[i].x && player->x + LASER_ADJUSTMENT <= enemiesArray[i].x + ENTITY_WIDTH &&
+
+                // Similar Y position
+                player->y + LASER_ADJUSTMENT >= enemiesArray[i].y && player->y + LASER_ADJUSTMENT <= enemiesArray[i].y + ENTITY_HEIGHT) {
+
+                    player->health -= 1;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /*
   This function assigns every attribute of the given texture and it shows them in the window
@@ -2556,6 +2605,21 @@ void showRadarEnemies(Game *gameWindow, Entity *enemiesArray, SDL_Rect *radarEne
 }
 
 /*
+    This function checks if the player has killed all the enemies o the player has loosed his life
+*/
+int endGame(Entity *player) {
+
+    if (player->score == HIGH_SCORE || player->health <= 0) {
+
+        return 1;
+
+    }
+
+    return 0;
+
+}
+
+/*
   This function calls and executes the necessary functions to run the game
 */
 int main (int argc, char **argv) {
@@ -2583,6 +2647,20 @@ int main (int argc, char **argv) {
     Mix_PlayMusic(back_sound, -1);
 
 
+
+
+
+
+
+
+
+
+    //SDL_Texture *winningTexture = IMG_LoadTexture(gameWindow.renderer,"Images/Trophy.png");
+
+
+
+
+
     // Infinite loop
     while(initRunning) {
 
@@ -2593,6 +2671,8 @@ int main (int argc, char **argv) {
         setPosition(gameWindow_ptr, initBackground, 125, -40, TITLE_SCREEN_WIDTH, TITLE_SCREEN_WIDTH);
 
         setPosition(gameWindow_ptr, pressEnter, 530, 779, PRESS_ENTER_WIDTH, PRESS_ENTER_HEIGHT);
+
+        //setPosition(gameWindow_ptr, winningTexture, 0, 350, TROPHY_WIDTH, TROPHY_HEIGHT);
 
         SDL_Event event;
 
@@ -2656,7 +2736,7 @@ int main (int argc, char **argv) {
                             player.w = ENTITY_WIDTH;
                             player.h = ENTITY_HEIGHT;
                             player.direction = 3;
-                            player.health = 1;
+                            player.health = 3;
                             player.score = 0;
 
                             // Laser creation
@@ -2689,6 +2769,8 @@ int main (int argc, char **argv) {
 
                             int gameRunning = 1;
 
+                            int endGameFlag = 0;
+
                             // Infinite loop
                             while(gameRunning) {
 
@@ -2718,18 +2800,53 @@ int main (int argc, char **argv) {
 
                                 laserAction(gameWindow_ptr, laserArray_ptr, mapArray, randomMapSize);
 
-                                destroyEntity(player_ptr, enemiesArray, laserArray_ptr);
+                                destroyLaserEnemy(player_ptr, enemiesArray, laserArray_ptr);
+
+                                destroyPlayerEnemy(player_ptr, enemiesArray);
 
                                 // Converts int to string
                                 sprintf(playerScore, "%d", player.score);
                                 scoreSurface = TTF_RenderText_Solid(scoreFont, playerScore, scoreColor);
                                 scoreTexture = SDL_CreateTextureFromSurface(gameWindow.renderer, scoreSurface);
 
+                                endGameFlag = endGame(player_ptr);
+
+                                if (endGameFlag == 1) {
+
+                                    gameRunning = 0;
+
+                                }
+
                                 SDL_RenderPresent(gameWindow.renderer);
 
                                 SDL_Delay(50);
 
                             }
+
+                            /*
+                            int flag = 0;
+
+                            SDL_Texture *winningTexture;
+                            winningTexture = IMG_LoadTexture(gameWindow.renderer,"Images/Trophy.png");
+
+                            while(1) {
+
+                                if (flag <= 1000) {
+
+                                    setPosition(gameWindow_ptr, winningTexture, 600, 450, TROPHY_WIDTH, TROPHY_HEIGHT);
+
+                                    flag++;
+
+                                    SDL_Delay(50);
+
+                                } else {
+
+                                    break;
+
+                                }
+
+                            }
+                            */
 
                             // Free memory
                             SDL_DestroyTexture(player.texture);
@@ -2756,7 +2873,7 @@ int main (int argc, char **argv) {
 	SDL_DestroyRenderer(gameWindow.renderer);
 	SDL_DestroyWindow(gameWindow.window);
 
-	Mix_FreeChunk(back_sound);
+	//Mix_FreeChunk(back_sound);
 
 	SDL_Quit();
 
