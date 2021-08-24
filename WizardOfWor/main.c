@@ -658,11 +658,58 @@ void destroyPlayerEnemy(Entity *player, Entity *enemiesArray) {
 
 
 
+/*
+  This function checks if the player, enemies or laser use the side tunnels.
+*/
+void checkTunnels(Entity *player, Entity *enemiesArray, LaserArray *laserArray) {
 
+    // Checking player left to right
+    if (player->x <= - 60 && player->y >= 230) {
 
+        player->x = 1190;
 
+    // Checking player right to left
+    } else if (player->x >= 1190 && player->y >= 230) {
 
+        player->x = - 60;
 
+    }
+
+    // Checking enemies
+    for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+
+        // Left to right
+        if (enemiesArray[i].x <= - 60 && enemiesArray[i].y >= 230) {
+
+            enemiesArray[i].x = 1190;
+
+        // Right left
+        } else if (enemiesArray[i].x >= 1190 && enemiesArray[i].y >= 230) {
+
+            enemiesArray[i].x = - 60;
+
+        }
+
+    }
+
+    // Checking lasers
+    for (int i = 0; i < LASER_MAX_QUANTITY; i++) {
+
+        // Left to right
+        if (laserArray->array[i].x <= - 30 && laserArray->array[i].y >= 230) {
+
+            laserArray->array[i].x  = 1190;
+
+        // Right left
+        } else if (laserArray->array[i].x  >= 1190 && laserArray->array[i].y >= 230) {
+
+            laserArray->array[i].x  = - 30;
+
+        }
+
+    }
+
+}
 
 /*
   This function assigns every attribute of the given texture and it shows them in the window
@@ -2793,6 +2840,17 @@ int main (int argc, char **argv) {
                                 updateRadarEnemies(radarEnemyArray, enemiesArray);
 
                                 showRadarEnemies(gameWindow_ptr, enemiesArray, radarEnemyArray);
+
+
+
+
+
+                                checkTunnels(player_ptr, enemiesArray, laserArray_ptr);
+
+
+
+
+
 
                                 showMap(gameWindow_ptr, mapArray, randomMapSize);
 
