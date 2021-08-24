@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 // Constants
 const int TITLE_SCREEN_WIDTH = 950;
@@ -95,6 +96,9 @@ typedef struct {
     Entity *array;
 
 } LaserArray;
+
+
+
 
 // Functions definition
 /*
@@ -1071,7 +1075,87 @@ void enemiesMovements(Game *gameWindow, Entity *enemiesArray, Entity *player, SD
 
         }
 
+
         loadEnemyImage(gameWindow, enemy);
+
+        /*
+        if (enemy->x >= player->x - 10 || enemy->x <= player->x + 10){
+
+
+        }
+        if (enemy->x > player->x && collision_left == 0 && movement == 0 && enemy->x > player->x + 10){
+
+
+                enemy->x-= ENEMY_SPEED;
+                movement = 1;
+        }
+
+       else if (enemy->x < player->x && collision_right == 0 && movement == 0  && enemy->x < player->x - 10){
+
+                enemy->x += ENEMY_SPEED;
+                movement = 1;
+        }
+
+        if (enemy->y > player->y && collision_up == 0 && movement == 0){
+
+                enemy->y -= ENEMY_SPEED;
+                movement = 1;
+        }
+
+        else if (enemy->y < player->y && collision_down == 0 && movement == 0){
+
+                enemy->y += ENEMY_SPEED;
+                movement = 1;
+        }
+
+
+
+
+
+
+
+        //direction_set = rand() % 3;
+
+        //printf("POSITION %d", enemiesArray[enemy_index].x);
+        //printf("DIRECTION %d", direction_set);
+
+        //printf("PLAYER X POSITION %d", player->x);
+        //printf("PLAYER Y POSITION %d", player->y);
+
+        //direction_set = (rand() % 3 ) + 0;
+
+        //enemiesArray[enemy_index].y += ENTITY_SPEED;
+        //enemiesArray[enemy_index].x += ENTITY_SPEED;
+
+        //Must set the user coordinates in order to follow him
+
+
+
+
+        while(enemiesArray[enemy_index].x != player_posx){
+
+
+            if (player_posx < enemiesArray[enemy_index].x ) {
+
+                printf("ENTRO MENOR %s", "MENOR");
+
+                enemiesArray[enemy_index].x -= ENTITY_SPEED;
+
+            }
+
+
+            if (player_posx > enemiesArray[enemy_index].x ) {
+
+                printf("ENTRO MAYOR %s", "MAYOR");
+
+                enemiesArray[enemy_index].x += ENTITY_SPEED;
+
+            }
+
+
+        }
+        */
+
 
     }
 
@@ -2488,7 +2572,16 @@ int main (int argc, char **argv) {
 
     SDL_Texture *pressEnter = IMG_LoadTexture(gameWindow.renderer,"Images/PressEnter.png");
 
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2 , 2048);
+
+    Mix_Music *back_sound = Mix_LoadMUS("background_sound.mp3");
+
     int initRunning = 1;
+
+    Mix_PlayMusic(back_sound, -1);
+
 
     // Infinite loop
     while(initRunning) {
@@ -2662,6 +2755,8 @@ int main (int argc, char **argv) {
 
 	SDL_DestroyRenderer(gameWindow.renderer);
 	SDL_DestroyWindow(gameWindow.window);
+
+	Mix_FreeChunk(back_sound);
 
 	SDL_Quit();
 
