@@ -1,8 +1,8 @@
 // Libraries
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <time.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -574,7 +574,7 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
 /*
   This function checks if the lasers collide with any enemy in the respective direction
 */
-void destroyEntity(Entity *enemiesArray, LaserArray *laserArray) {
+void destroyEntity(Entity *player, Entity *enemiesArray, LaserArray *laserArray) {
 
     // Checking lasers
     for (int i = 0; i < LASER_MAX_QUANTITY; i++) {
@@ -590,6 +590,8 @@ void destroyEntity(Entity *enemiesArray, LaserArray *laserArray) {
 
                     // Similar Y position
                     laserArray->array[i].y >= enemiesArray[j].y && laserArray->array[i].y <= enemiesArray[j].y + ENTITY_HEIGHT) {
+
+                        player->score += 100;
 
                         laserArray->array[i].health = 0;
                         laserArray->array[i].x = 0;
@@ -2520,14 +2522,6 @@ int main (int argc, char **argv) {
 
                             SDL_Texture *gameWallpaper = IMG_LoadTexture(gameWindow.renderer,"Images/Wallpaper.png");
 
-                            // Score label creation
-                            TTF_Init();
-                            TTF_Font *scoreFont = TTF_OpenFont("arial.ttf", 15);
-                            SDL_Color scoreColor = {255, 255, 0, 0};
-                            SDL_Surface *scoreSurface = TTF_RenderText_Solid(scoreFont, "100", scoreColor);
-                            SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(gameWindow.renderer, scoreSurface);
-                            SDL_FreeSurface(scoreSurface);
-
                             // Map creation
                             SDL_Rect *mapArray;
 
@@ -2570,29 +2564,13 @@ int main (int argc, char **argv) {
                             player.h = ENTITY_HEIGHT;
                             player.direction = 3;
                             player.health = 1;
-                            player.number = 0;
+                            player.score = 0;
 
                             // Laser creation
                             LaserArray laserArray;
                             LaserArray *laserArray_ptr = &laserArray;
                             laserArray.array = (Entity*)malloc(10 * sizeof(Entity));
                             laserArray.quantity = 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                             //Enemy creation
                             Entity *enemiesArray;
@@ -2605,6 +2583,16 @@ int main (int argc, char **argv) {
                             radarEnemyArray = (SDL_Rect*)malloc(ENTITY_MAX_QUANTITY * sizeof(SDL_Rect));
                             createRadarEnemies(radarEnemyArray);
                             updateRadarEnemies(radarEnemyArray, enemiesArray);
+
+                            // Score label creation
+                            TTF_Init();
+                            TTF_Font *scoreFont = TTF_OpenFont("arial.ttf", 15);
+                            SDL_Color scoreColor = {255, 255, 0, 0};
+                            char playerScore[20];
+
+                            SDL_Surface *scoreSurface = TTF_RenderText_Solid(scoreFont, "0", scoreColor);
+                            SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(gameWindow.renderer, scoreSurface);
+                            SDL_FreeSurface(scoreSurface);
 
                             int gameRunning = 1;
 
@@ -2637,7 +2625,12 @@ int main (int argc, char **argv) {
 
                                 laserAction(gameWindow_ptr, laserArray_ptr, mapArray, randomMapSize);
 
-                                destroyEntity(enemiesArray, laserArray_ptr);
+                                destroyEntity(player_ptr, enemiesArray, laserArray_ptr);
+
+                                // Converts int to string
+                                sprintf(playerScore, "%d", player.score);
+                                scoreSurface = TTF_RenderText_Solid(scoreFont, playerScore, scoreColor);
+                                scoreTexture = SDL_CreateTextureFromSurface(gameWindow.renderer, scoreSurface);
 
                                 SDL_RenderPresent(gameWindow.renderer);
 
