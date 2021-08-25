@@ -64,8 +64,11 @@ const int WORLUK = 5;
 
 const int HIGH_SCORE = 600;
 
-const int TROPHY_WIDTH = 430;
-const int TROPHY_HEIGHT = 240;
+const int TROPHY_WIDTH = 320;
+const int TROPHY_HEIGHT = 900;
+
+const int SKULL_WIDTH = 270;
+const int SKULL_HEIGHT = 1050;
 
 // Structures definition
 typedef struct {
@@ -2748,9 +2751,13 @@ void showRadarEnemies(Game *gameWindow, Entity *enemiesArray, SDL_Rect *radarEne
 */
 int endGame(Entity *player) {
 
-    if (player->score == HIGH_SCORE || player->health <= 0) {
+    if (player->score == HIGH_SCORE) {
 
         return 1;
+
+    } else if (player->health <= 0) {
+
+        return 2;
 
     }
 
@@ -2775,6 +2782,12 @@ int main (int argc, char **argv) {
 
     SDL_Texture *pressEnter = IMG_LoadTexture(gameWindow.renderer,"Images/PressEnter.png");
 
+    int endGameTexture = 0;
+
+    SDL_Texture *endGameTexture1;
+
+    SDL_Texture *endGameTexture2;
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2 , 2048);
@@ -2784,23 +2797,6 @@ int main (int argc, char **argv) {
     Mix_PlayMusic(back_sound, -1);
 
     int initRunning = 1;
-
-
-
-
-
-
-
-
-
-
-
-
-    //SDL_Texture *winningTexture = IMG_LoadTexture(gameWindow.renderer,"Images/Trophy.png");
-
-
-
-
 
     // Infinite loop
     while(initRunning) {
@@ -2813,7 +2809,17 @@ int main (int argc, char **argv) {
 
         setPosition(gameWindow_ptr, pressEnter, 530, 779, PRESS_ENTER_WIDTH, PRESS_ENTER_HEIGHT);
 
-        //setPosition(gameWindow_ptr, winningTexture, 0, 350, TROPHY_WIDTH, TROPHY_HEIGHT);
+        if(endGameTexture == 1) {
+
+            setPosition(gameWindow_ptr, endGameTexture1, 0, 0, TROPHY_WIDTH, TROPHY_HEIGHT);
+            setPosition(gameWindow_ptr, endGameTexture1, 1075, 0, TROPHY_WIDTH, TROPHY_HEIGHT);
+
+        } else if(endGameTexture == 2) {
+
+            setPosition(gameWindow_ptr, endGameTexture1, 0, 0, SKULL_WIDTH, SKULL_HEIGHT);
+            setPosition(gameWindow_ptr, endGameTexture2, 1075, 0, SKULL_WIDTH, SKULL_HEIGHT);
+
+        }
 
         SDL_Event event;
 
@@ -2954,7 +2960,7 @@ int main (int argc, char **argv) {
 
                                 endGameFlag = endGame(player_ptr);
 
-                                if (endGameFlag == 1) {
+                                if (endGameFlag == 1 || endGameFlag == 2) {
 
                                     gameRunning = 0;
 
@@ -2966,32 +2972,25 @@ int main (int argc, char **argv) {
 
                             }
 
-                            /*
-                            int flag = 0;
+                            if (endGameFlag == 1) {
 
-                            SDL_Texture *winningTexture;
-                            winningTexture = IMG_LoadTexture(gameWindow.renderer,"Images/Trophy.png");
+                                endGameTexture = 1;
 
-                            while(1) {
+                                endGameTexture1 = IMG_LoadTexture(gameWindow.renderer,"Images/Trophy.png");
+                                endGameTexture2 = IMG_LoadTexture(gameWindow.renderer,"Images/Trophy.png");
 
-                                if (flag <= 1000) {
+                            } else if (endGameFlag == 2) {
 
-                                    setPosition(gameWindow_ptr, winningTexture, 600, 450, TROPHY_WIDTH, TROPHY_HEIGHT);
+                                endGameTexture = 2;
 
-                                    flag++;
-
-                                    SDL_Delay(50);
-
-                                } else {
-
-                                    break;
-
-                                }
+                                endGameTexture1 = IMG_LoadTexture(gameWindow.renderer,"Images/Skull.png");
+                                endGameTexture2 = IMG_LoadTexture(gameWindow.renderer,"Images/Skull.png");
 
                             }
-                            */
 
                             // Free memory
+                            SDL_DestroyTexture(gameBackground);
+                            SDL_DestroyTexture(gameWallpaper);
                             SDL_DestroyTexture(player.texture);
 
                             free(laserArray.array);
@@ -3008,6 +3007,12 @@ int main (int argc, char **argv) {
         SDL_RenderPresent(gameWindow_ptr->renderer);
 
     }
+
+    // Free memory
+    SDL_DestroyTexture(initBackground);
+    SDL_DestroyTexture(pressEnter);
+    SDL_DestroyTexture(endGameTexture1);
+    SDL_DestroyTexture(endGameTexture2);
 
 	IMG_Quit();
 
