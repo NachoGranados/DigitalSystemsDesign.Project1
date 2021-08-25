@@ -102,6 +102,14 @@ typedef struct {
 
 } LaserArray;
 
+typedef struct {
+
+    int collision;
+    int i;
+    int j;
+
+} Coordinate;
+
 // Functions definition
 /*
   This function creates and sets specific characteristics to the window
@@ -577,50 +585,82 @@ int checkCollison(Entity *entity, SDL_Rect *mapArray, int randomMapSize, int wid
 
 }
 
+/*
+   This function checks if the given laser collides with enemy in the array.
+*/
+int collisionEnemy(Entity *laser, Entity *enemiesArray, int j) {
 
+    // Stop case
+    if (j == ENTITY_MAX_QUANTITY) {
 
+        return -1;
 
+    }
 
+    // Checking if the enemy is alive
+    if (enemiesArray[j].health == 1 &&
 
+        // Similar X position
+        laser->x >= enemiesArray[j].x && laser->x <= enemiesArray[j].x + ENTITY_WIDTH &&
 
+        // Similar Y position
+        laser->y >= enemiesArray[j].y && laser->y <= enemiesArray[j].y + ENTITY_HEIGHT) {
 
+        return j;
 
+    } else {
+
+        return collisionEnemy(laser, enemiesArray, j + 1);
+
+    }
+
+}
 
 /*
-  This function checks if the lasers collide with any enemy in the respective direction
+  This function checks if one laser collides with enemy in the array, otherwise compares another
+  laser with the rest enemies in the array.
 */
-void destroyLaserEnemy(Entity *player, Entity *enemiesArray, LaserArray *laserArray) {
+Coordinate collisionLaser(Entity *enemiesArray, LaserArray *laserArray, int i, int j) {
 
-    // Checking lasers
-    for (int i = 0; i < LASER_MAX_QUANTITY; i++) {
+    // Stop case
+    if (i == LASER_MAX_QUANTITY) {
 
-        // Checking enemies
-        for (int j = 0; j < ENTITY_MAX_QUANTITY; j++) {
+        Coordinate coordinate;
 
-            // Checking if the laser and the enemy are alive
-            if (laserArray->array[i].health == 1 && enemiesArray[j].health == 1) {
+        coordinate.collision = 0;
+        coordinate.i = i;
+        coordinate.j = j;
 
-                // Similar X position
-                if (laserArray->array[i].x >= enemiesArray[j].x && laserArray->array[i].x <= enemiesArray[j].x + ENTITY_WIDTH &&
+        return coordinate;
 
-                    // Similar Y position
-                    laserArray->array[i].y >= enemiesArray[j].y && laserArray->array[i].y <= enemiesArray[j].y + ENTITY_HEIGHT) {
+    }
 
-                        player->score += 100;
+    // Checking if the laser is alive
+    if (laserArray->array[i].health == 1) {
 
-                        laserArray->array[i].health = 0;
-                        laserArray->array[i].x = 0;
-                        laserArray->array[i].y = 0;
+        Entity *laser = &laserArray->array[i];
 
-                        enemiesArray[j].health = 0;
-                        enemiesArray[j].x = 0;
-                        enemiesArray[j].y = 0;
+        j = collisionEnemy(laser, enemiesArray, 0);
 
-                }
+        if (j == -1) {
 
-            }
+            return collisionLaser(enemiesArray, laserArray, i + 1, j);
+
+        } else {
+
+            Coordinate coordinate;
+
+            coordinate.collision = 1;
+            coordinate.i = i;
+            coordinate.j = j;
+
+            return coordinate;
 
         }
+
+    } else {
+
+        return collisionLaser(enemiesArray, laserArray, i + 1, j);
 
     }
 
@@ -629,34 +669,86 @@ void destroyLaserEnemy(Entity *player, Entity *enemiesArray, LaserArray *laserAr
 /*
   This function checks if the player collides with any enemy in the respective direction
 */
-void destroyPlayerEnemy(Entity *player, Entity *enemiesArray) {
+int destroyPlayerEnemy(Entity *player, Entity *enemiesArray, int i) {
 
-    // Checking enemies
-    for (int i = 0; i < ENTITY_MAX_QUANTITY; i++) {
+    // Stop case
+    if (i == ENTITY_MAX_QUANTITY) {
 
-        // Checking if the player and the enemy are alive
-        if (player->health > 0 && enemiesArray[i].health == 1) {
+        return 0;
 
-            // Similar X position
-            if (player->x + LASER_ADJUSTMENT >= enemiesArray[i].x && player->x + LASER_ADJUSTMENT <= enemiesArray[i].x + ENTITY_WIDTH &&
+    }
 
-                // Similar Y position
-                player->y + LASER_ADJUSTMENT >= enemiesArray[i].y && player->y + LASER_ADJUSTMENT <= enemiesArray[i].y + ENTITY_HEIGHT) {
+    // Checking if the enemy is alive
+    if (enemiesArray[i].health == 1 &&
 
-                    player->health -= 1;
+        // Similar X position
+        player->x + LASER_ADJUSTMENT >= enemiesArray[i].x && player->x + LASER_ADJUSTMENT <= enemiesArray[i].x + ENTITY_WIDTH &&
 
-            }
+        // Similar Y position
+        player->y + LASER_ADJUSTMENT >= enemiesArray[i].y && player->y + LASER_ADJUSTMENT <= enemiesArray[i].y + ENTITY_HEIGHT) {
 
-        }
+        return 1;
+
+    } else {
+
+        return destroyPlayerEnemy(player, enemiesArray, i + 1);
 
     }
 
 }
 
+/*
+  This function checks if there is a collision between lasers and enemies or player and enemies depending on
+  the selection given.
+*/
+void destroyEntity(Entity *player, Entity *enemiesArray, LaserArray *laserArray, int selection) {
 
+    Coordinate coordinateResult;
 
+    int intResult;
 
+    switch(selection) {
 
+        // Check collisions between lasers and enemies
+        case 0:
+
+            coordinateResult = collisionLaser(enemiesArray, laserArray, 0, 0);
+
+            if (coordinateResult.collision == 1) {
+
+                int i = coordinateResult.i;
+                int j = coordinateResult.j;
+
+                player->score += 100;
+
+                laserArray->array[i].health = 0;
+                laserArray->array[i].x = 0;
+                laserArray->array[i].y = 0;
+
+                enemiesArray[j].health = 0;
+                enemiesArray[j].x = 0;
+                enemiesArray[j].y = 0;
+
+            }
+
+            break;
+
+        // Check collisions between player and enemies
+        case 1:
+
+            intResult = destroyPlayerEnemy(player, enemiesArray, 0);
+
+            if (intResult == 1) {
+
+                player->health -= 1;
+
+            }
+
+            break;
+
+    }
+
+}
 
 /*
   This function checks if the player, enemies or laser use the side tunnels.
@@ -2689,9 +2781,11 @@ int main (int argc, char **argv) {
 
     Mix_Music *back_sound = Mix_LoadMUS("background_sound.mp3");
 
+    Mix_PlayMusic(back_sound, -1);
+
     int initRunning = 1;
 
-    Mix_PlayMusic(back_sound, -1);
+
 
 
 
@@ -2841,16 +2935,7 @@ int main (int argc, char **argv) {
 
                                 showRadarEnemies(gameWindow_ptr, enemiesArray, radarEnemyArray);
 
-
-
-
-
                                 checkTunnels(player_ptr, enemiesArray, laserArray_ptr);
-
-
-
-
-
 
                                 showMap(gameWindow_ptr, mapArray, randomMapSize);
 
@@ -2858,9 +2943,9 @@ int main (int argc, char **argv) {
 
                                 laserAction(gameWindow_ptr, laserArray_ptr, mapArray, randomMapSize);
 
-                                destroyLaserEnemy(player_ptr, enemiesArray, laserArray_ptr);
+                                destroyEntity(player_ptr, enemiesArray, laserArray_ptr, 0);
 
-                                destroyPlayerEnemy(player_ptr, enemiesArray);
+                                destroyEntity(player_ptr, enemiesArray, laserArray_ptr, 1);
 
                                 // Converts int to string
                                 sprintf(playerScore, "%d", player.score);
