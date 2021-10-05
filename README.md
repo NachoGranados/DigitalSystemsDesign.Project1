@@ -1,1 +1,1 @@
-# DisenoSistemasDigitales.Project1
+# DigitalSystemsDesign.Project1
